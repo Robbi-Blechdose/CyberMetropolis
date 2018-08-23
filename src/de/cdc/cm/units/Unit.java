@@ -1,8 +1,6 @@
 package de.cdc.cm.units;
 
 import com.jme3.asset.AssetManager;
-import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 
@@ -20,9 +18,12 @@ public class Unit
     
     private UnitType unitType;
     private Node model;
-    private BetterCharacterControl betterCharacterControl;
     
-    public Unit(UnitType t, Node unitNode, AssetManager assetManager, BulletAppState bulletAppState, Vector3f startPos)
+    private Vector3f oldPos;
+    private Vector3f targetPos;
+    private boolean isMoving = false;
+    
+    public Unit(UnitType t, Node unitNode, AssetManager assetManager, Vector3f startPos, int index)
     {
         this.unitType = t;
         
@@ -31,23 +32,45 @@ public class Unit
             case SOLDIER:
             {
                 model = (Node) assetManager.loadModel("Models/Units/Soldier.j3o");
-                unitNode.attachChild(model);
                 break;
             }
         }
         
         model.setLocalTranslation(startPos);
-        betterCharacterControl = new BetterCharacterControl(0.2f, 0.5f, 1f);
-        model.addControl(betterCharacterControl);
-        bulletAppState.getPhysicsSpace().add(betterCharacterControl);
+        model.setName("UNIT" + index);
         
-        //TODO
+        unitNode.attachChild(model);
     }
     
-    //TODO
+    public void setTargetPosition(Vector3f targetPos)
+    {
+        this.oldPos = model.getLocalTranslation().clone();
+        this.targetPos = targetPos;
+        isMoving = true;
+    }
+    
+    public void update(float tpf)
+    {
+        if(isMoving)
+        {
+            if(model.getLocalTranslation().distance(targetPos) < 0.1f)
+            {
+                isMoving = false;
+            }
+            else
+            {
+                model.setLocalTranslation(targetPos.subtract(oldPos).normalize().mult(tpf).mult(5).add(model.getLocalTranslation()));
+            }
+        }
+    }
     
     public void cleanup(Node unitNode)
     {
         unitNode.detachChild(model);
+    }
+    
+    public Node getModel()
+    {
+        return model;
     }
 }
