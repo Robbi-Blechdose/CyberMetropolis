@@ -13,9 +13,10 @@ public class WorldGenerator
     private AssetManager assetManager;
     private Node world;
     
-    public WorldGenerator(Node world)
+    public WorldGenerator(Node world, AssetManager assetManager)
     {
         this.world = world;
+        this.assetManager = assetManager;
         generateWorld();
     }
     
