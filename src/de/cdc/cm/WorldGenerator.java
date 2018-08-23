@@ -1,6 +1,7 @@
 package de.cdc.cm;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.math.Quaternion;
 import com.jme3.scene.Node;
 
 /**
@@ -28,8 +29,20 @@ public class WorldGenerator
             {
                 Node hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon.j3o");
                 world.attachChild(hex);
-                hex.setLocalTranslation(i, 0, o);
+                float x = 0;
+                boolean rotate = false;
+                if(i%2 == 0)
+                {
+                    x = 1.455f;
+                    rotate = true;
+                }
+                hex.setLocalTranslation(o*1.442f*2+x, 0, i*1.257f*2);
+                /*if(rotate == true)
+                {
+                    hex.setLocalRotation(new Quaternion().fromAngles(0, 90, 0));
+                }*/
             }
         }
     }
+    
 }
