@@ -31,6 +31,8 @@ public class GenericState extends AbstractAppState
     protected Node rootNode;
     protected Node guiNode;
     protected Camera cam;
+    
+    protected Guis guis;
 	
     public GenericState(){}
 	
@@ -51,6 +53,8 @@ public class GenericState extends AbstractAppState
 	this.rootNode = this.app.getRootNode();
 	this.guiNode = this.app.getGuiNode();
 	this.cam = this.app.getCamera();
+        
+        this.guis = this.app.getGUIs();
     }
 	
     @Override

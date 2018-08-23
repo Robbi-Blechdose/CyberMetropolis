@@ -39,6 +39,7 @@ public class Main extends SimpleApplication
     public static final String workingDirectory = System.getProperty("user.home");
     
     private static Settings settings;
+    private Guis guis;
     
     public static void main(String[] args) throws IOException
     {
@@ -102,6 +103,8 @@ public class Main extends SimpleApplication
     @Override
     public void simpleInitApp()
     {
+        this.guis = new Guis(this);
+        
         this.getStateManager().attach(new GameState());
         this.getStateManager().getState(GameState.class).setEnabled(true);
     }
@@ -134,5 +137,10 @@ public class Main extends SimpleApplication
     {
         super.destroy();
         logger.log(Level.INFO, "Stopping...");
+    }
+    
+    public Guis getGUIs()
+    {
+        return guis;
     }
 }
