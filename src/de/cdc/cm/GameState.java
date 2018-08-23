@@ -49,8 +49,8 @@ public class GameState extends GenericState implements ActionListener
         //inputManager.addMapping("Debug", new KeyTrigger(settingVariables.getKeybinding("Debug")));
         //inputManager.addListener(this, "Debug");
         
-        //Test model loading
-        rootNode.attachChild(assetManager.loadModel("Models/Hexagon/Hexagon.j3o"));
+        //Generate world
+        WorldGenerator wg = new WorldGenerator(world, assetManager);
         
         sun = new DirectionalLight();
         sun.setColor(ColorRGBA.White);
