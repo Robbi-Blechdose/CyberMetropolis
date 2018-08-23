@@ -21,11 +21,12 @@ import javax.swing.JOptionPane;
 import jme3tools.savegame.SaveGame;
 
 /**
+ * 
  * @author Julius
+ * 
  */
 public class Main extends SimpleApplication
 {
-    
     private static final Logger logger = Logger.getLogger(de.cdc.cm.Main.class.getName());
     
     private static AppSettings appSettings;

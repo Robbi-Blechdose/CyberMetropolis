@@ -9,9 +9,6 @@ import com.jme3.input.InputManager;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
-import com.simsilica.lemur.Container;
-import com.simsilica.lemur.Label;
-import com.simsilica.lemur.event.PopupState;
 
 /**
  * Generic Game State as superclass for all other game states
