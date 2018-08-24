@@ -105,8 +105,7 @@ public class Main extends SimpleApplication
     {
         this.guis = new Guis(this);
         
-        this.getStateManager().attach(new GameState());
-        this.getStateManager().getState(GameState.class).setEnabled(true);
+        this.getStateManager().attach(new MenuState());
     }
     
     @Override

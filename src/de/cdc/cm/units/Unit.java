@@ -2,6 +2,7 @@ package de.cdc.cm.units;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.math.Vector3f;
+import com.jme3.network.serializing.Serializable;
 import com.jme3.scene.Node;
 
 /**
