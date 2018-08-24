@@ -212,8 +212,12 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     
     public void addUnit(UnitType t)
     {
-        Unit unit = new Unit(t, unitNode, assetManager, new Vector3f(0, 1, 0), units.size());
-        units.add(unit);
+        Vector3f startPos = new Vector3f(0, 1, 0);
+//        
+//        Unit unit = new Unit(t, unitNode, assetManager, startPos, units.size());
+//        units.add(unit);
+//        
+        client.send(new UnitCreatedMessage(t, startPos, isHosting));
     }
     
     private void tryMoveActiveUnit()
@@ -251,5 +255,28 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                 }
             }
         }
+        else if(m instanceof UnitCreatedMessage)
+        {
+            if((isHosting && !((UnitCreatedMessage) m).isPlayerA()) || (!isHosting && ((UnitCreatedMessage) m).isPlayerA()))
+            {
+                Unit unit = new Unit(((UnitCreatedMessage) m).getType(), unitNode, assetManager,
+                        ((UnitCreatedMessage) m).getLocation(), units.size());
+                enemyUnits.add(unit);
+            }
+            else
+            {
+                Unit unit = new Unit(((UnitCreatedMessage) m).getType(), unitNode, assetManager,
+                        ((UnitCreatedMessage) m).getLocation(), units.size());
+                units.add(unit);
+            }
+        }
+    }
+    
+    @Override
+    public void cleanup()
+    {
+        super.cleanup();
+        
+        client.close();
     }
 }

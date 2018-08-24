@@ -66,6 +66,10 @@ public class GameServer implements MessageListener<HostedConnection>, Connection
                 unitBPositions = ((UnitUpdateMessage) m).getUnitPositions();
             }
         }
+        else if(m instanceof UnitCreatedMessage)
+        {
+            server.broadcast(m);
+        }
     }
 
     @Override
