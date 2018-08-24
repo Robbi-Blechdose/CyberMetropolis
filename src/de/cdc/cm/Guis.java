@@ -81,7 +81,7 @@ public class Guis
         });
         menuNode.attachChild(join);
         
-        serverIp = new TextField("Please enter the host IP here");
+        serverIp = new TextField("localhost");
         serverIp.setFontSize(17f);
         serverIp.setColor(ColorRGBA.Red);
         serverIp.setPreferredSize(new Vector3f(app.getSettings().getWidth() / 6, app.getSettings().getHeight() / 28, 1));
