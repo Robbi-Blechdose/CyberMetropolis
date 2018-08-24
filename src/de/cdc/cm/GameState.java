@@ -14,6 +14,7 @@ import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.network.Client;
@@ -189,7 +190,8 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                 if(results2.size() > 0)
                 {
                     CollisionResult closest = results2.getClosestCollision();
-                    targetPosition = closest.getContactPoint();
+                    targetPosition = closest.getGeometry().getLocalTranslation().add(0, 2, 0);
+                    System.out.println(targetPosition);
                     tryMoveActiveUnit();
                 }
             }
@@ -214,7 +216,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     //TODO: proper startpos
     public void addUnit(UnitType t)
     {
-        Vector3f startPos = new Vector3f(0, 1, 0);
+        Vector3f startPos = new Vector3f(0, 2, 0);
         
         client.send(new UnitCreatedMessage(t, startPos, isHosting));
     }
