@@ -29,7 +29,16 @@ public class WorldGenerator
         {
             for(int o = 0; o < 100; o++)
             {
-                Node hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon.j3o");
+                float height = (float) osn.eval(i * 0.1f, o * 0.1f)* 3f;
+                Node hex;
+                if (height < 1.5)
+                {
+                    hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon.j3o");
+                }
+                else
+                {
+                    hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon.j3o");
+                }
                 world.attachChild(hex);
                 float x = 0;      
                 if(i%2 == 0)
