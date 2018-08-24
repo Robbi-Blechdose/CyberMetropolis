@@ -3,9 +3,12 @@ package de.cdc.cm;
 import com.jme3.app.Application;
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.audio.AudioData;
+import com.jme3.audio.AudioNode;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
+import com.jme3.effect.ParticleEmitter;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
@@ -14,7 +17,6 @@ import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.network.Client;
@@ -66,6 +68,10 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     private Vector3f targetPosition;
     
     private boolean uiModeEnabled = false;
+    
+    //SFX 'n' stuff
+    private AudioNode pootis;
+    private Node deathParticles;
     
     public GameState(boolean isHosting)
     {
@@ -138,6 +144,14 @@ public class GameState extends GenericState implements ActionListener, ClientSta
             System.out.println("Could not connect.");
             e.printStackTrace();
         }
+        
+        //SFX 'n' stuff
+        pootis = new AudioNode(assetManager, "Sounds/Pootis.wav", AudioData.DataType.Buffer);
+        pootis.setVolume(0.4f);
+        rootNode.attachChild(pootis);
+        
+        deathParticles = (Node) assetManager.loadModel("Models/DeathParticles.j3o");
+        rootNode.attachChild(deathParticles);
     }
     
     @Override
@@ -372,8 +386,11 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                         {
                             if(enemyUnits.get(i).getId() == ((UnitDestroyedMessage) m).getId())
                             {
+                                deathParticles.setLocalTranslation(enemyUnits.get(i).getModel().getLocalTranslation().add(0, 2, 0));
+                                ((ParticleEmitter) deathParticles.getChild("Emitter")).emitAllParticles();
                                 enemyUnits.get(i).cleanup(enemyUnitNode);
                                 enemyUnits.remove(i);
+                                pootis.play();
                                 break;
                             }
                         }
@@ -392,8 +409,11 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                         {
                             if(units.get(i).getId() == ((UnitDestroyedMessage) m).getId())
                             {
+                                deathParticles.setLocalTranslation(enemyUnits.get(i).getModel().getLocalTranslation().add(0, 2, 0));
+                                ((ParticleEmitter) deathParticles.getChild("Emitter")).emitAllParticles();
                                 units.get(i).cleanup(unitNode);
                                 units.remove(i);
+                                pootis.play();
                                 break;
                             }
                         }
