@@ -1,9 +1,8 @@
 package de.cdc.cm;
 
 import com.jme3.asset.AssetManager;
-import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
-import java.util.Random;
 
 /**
  *
@@ -15,10 +14,13 @@ public class WorldGenerator
     private AssetManager assetManager;
     private Node world;
     
+    private Vector3f[][] positions;
+    
     public WorldGenerator(Node world, AssetManager assetManager)
     {
         this.world = world;
         this.assetManager = assetManager;
+        this.positions = new Vector3f[100][100];
         generateWorld();
     }
     
@@ -45,16 +47,19 @@ public class WorldGenerator
                 }
                 world.attachChild(hex);
                 float x = 0;      
-                if(i%2 == 0)
+                if(i % 2 == 0)
                 {
                     x = 1.445f;
                 }
-                hex.setLocalTranslation(o*1.43f*2+x,
-                        (float) osn.eval(i * 0.1f, o * 0.1f) * 3f, i*1.22f*2); 
+                hex.setLocalTranslation(o * 1.43f * 2 + x, (float) osn.eval(i * 0.1f, o * 0.1f) * 3f, i * 1.22f * 2); 
                 
-                System.out.println(hex.getLocalTranslation());
+                positions[i][o] = hex.getLocalTranslation();
             }
         }
     }
-    //(float)random.nextFloat()
+    
+    public Vector3f[][] getWorldPositions()
+    {
+        return positions;
+    }
 }

@@ -13,17 +13,24 @@ import de.cdc.cm.units.Unit.UnitType;
 @Serializable
 public class UnitCreatedMessage extends AbstractMessage
 {
+    private int id;
     private UnitType type;
     private Vector3f location;
     private boolean isPlayerA;
     
     public UnitCreatedMessage() {}
     
-    public UnitCreatedMessage(UnitType t, Vector3f pos, boolean isPlayerA)
+    public UnitCreatedMessage(int id, UnitType t, Vector3f pos, boolean isPlayerA)
     {
+        this.id = id;
         this.type = t;
         this.location = pos;
         this.isPlayerA = isPlayerA;
+    }
+    
+    public int getId()
+    {
+        return id;
     }
 
     public UnitType getType()

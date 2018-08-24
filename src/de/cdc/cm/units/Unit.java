@@ -17,6 +17,8 @@ public class Unit
         SOLDIER
     };
     
+    private int id;
+    
     private UnitType unitType;
     private Node model;
     
@@ -24,7 +26,11 @@ public class Unit
     private Vector3f targetPos;
     private boolean isMoving = false;
     
-    public Unit(UnitType t, Node unitNode, AssetManager assetManager, Vector3f startPos, int index)
+    private int health;
+    private int damage;
+    private boolean dead = false;
+    
+    public Unit(UnitType t, Node unitNode, AssetManager assetManager, Vector3f startPos, int id)
     {
         this.unitType = t;
         
@@ -33,14 +39,23 @@ public class Unit
             case SOLDIER:
             {
                 model = (Node) assetManager.loadModel("Models/Units/Soldier.j3o");
+                health = 100;
+                damage = 40;
                 break;
             }
         }
         
         model.setLocalTranslation(startPos);
-        model.setName("UNIT" + index);
+        model.setName("UNIT" + id);
+        this.id = id;
         
         unitNode.attachChild(model);
+    }
+    
+    public void attackUnit(Unit enemy)
+    {
+        setTargetPosition(enemy.getModel().getLocalTranslation());
+        enemy.damageUnit(damage);
     }
     
     public void setTargetPosition(Vector3f targetPos)
@@ -65,6 +80,15 @@ public class Unit
         }
     }
     
+    public void damageUnit(int dmg)
+    {
+        health -= dmg;
+        if(health <= 0)
+        {
+            dead = true;
+        }
+    }
+    
     public void cleanup(Node unitNode)
     {
         unitNode.detachChild(model);
@@ -73,5 +97,15 @@ public class Unit
     public Node getModel()
     {
         return model;
+    }
+    
+    public boolean isDead()
+    {
+        return dead;
+    }
+    
+    public int getId()
+    {
+        return id;
     }
 }

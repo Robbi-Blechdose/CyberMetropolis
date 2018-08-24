@@ -1,8 +1,5 @@
 package de.cdc.cm.networking;
 
-import com.jme3.app.Application;
-import com.jme3.app.state.AbstractAppState;
-import com.jme3.app.state.AppStateManager;
 import com.jme3.math.Vector3f;
 import com.jme3.network.ConnectionListener;
 import com.jme3.network.HostedConnection;
@@ -67,6 +64,10 @@ public class GameServer implements MessageListener<HostedConnection>, Connection
             }
         }
         else if(m instanceof UnitCreatedMessage)
+        {
+            server.broadcast(m);
+        }
+        else if(m instanceof UnitDestroyedMessage)
         {
             server.broadcast(m);
         }

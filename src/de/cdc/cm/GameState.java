@@ -26,6 +26,7 @@ import com.jme3.network.serializing.Serializer;
 import com.jme3.scene.Node;
 import de.cdc.cm.networking.GameServer;
 import de.cdc.cm.networking.UnitCreatedMessage;
+import de.cdc.cm.networking.UnitDestroyedMessage;
 import de.cdc.cm.networking.UnitUpdateMessage;
 import de.cdc.cm.units.Unit;
 import de.cdc.cm.units.Unit.UnitType;
@@ -51,6 +52,9 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     private Node world;
     private RigidBodyControl worldPhysics;
     private Node unitNode;
+    private Node enemyUnitNode;
+    
+    private Vector3f[][] worldPositions;
     
     private DirectionalLight sun;
     private AmbientLight ambient;
@@ -80,9 +84,13 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         unitNode = new Node();
         rootNode.attachChild(unitNode);
         
+        enemyUnitNode = new Node();
+        rootNode.attachChild(enemyUnitNode);
+        
         //Generate world
         WorldGenerator wg = new WorldGenerator(world, assetManager);
         GeometryBatchFactory.optimize(world);
+        worldPositions = wg.getWorldPositions();
         
         sun = new DirectionalLight();
         sun.setColor(ColorRGBA.White);
@@ -110,6 +118,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         
         Serializer.registerClass(UnitUpdateMessage.class);
         Serializer.registerClass(UnitCreatedMessage.class);
+        Serializer.registerClass(UnitDestroyedMessage.class);
         
         if(isHosting)
         {
@@ -145,6 +154,10 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         {
             unit.update(tpf);
             unitPositions.add(unit.getModel().getLocalTranslation());
+            if(unit.isDead())
+            {
+                client.send(new UnitDestroyedMessage(unit.getId(), isHosting));
+            }
         }
         
         client.send(new UnitUpdateMessage(unitPositions, isHosting));
@@ -155,13 +168,14 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     {
         if(name.equals("Select") && !isPressed)
         {
+            boolean found = false;
+            
+            //Check own units
             CollisionResults results = new CollisionResults();
             Vector3f click3d = cam.getWorldCoordinates(inputManager.getCursorPosition().clone(), 0f).clone();
             Vector3f dir = cam.getWorldCoordinates(inputManager.getCursorPosition().clone(), 1f).subtractLocal(click3d).normalizeLocal();
             Ray ray = new Ray(click3d, dir);
             unitNode.collideWith(ray, results);
-            
-            boolean found = false;
             
             if(results.size() > 0)
             {
@@ -179,6 +193,36 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                 }
             }
             
+            //Check enemy units
+            if(!found)
+            {
+                CollisionResults results2 = new CollisionResults();
+                Vector3f click3d2 = cam.getWorldCoordinates(inputManager.getCursorPosition().clone(), 0f).clone();
+                Vector3f dir2 = cam.getWorldCoordinates(inputManager.getCursorPosition().clone(), 1f).subtractLocal(click3d2).normalizeLocal();
+                Ray ray2 = new Ray(click3d2, dir2);
+                enemyUnitNode.collideWith(ray2, results2);
+                
+                if(results2.size() > 0)
+                {
+                    CollisionResult closest = results2.getClosestCollision();
+                    
+                    for(int i = 0; i < enemyUnits.size(); i++)
+                    {
+                        if(closest.getGeometry().getParent().getParent().getName().equals("UNIT" + i))
+                        {
+                            if(selectedUnit != null)
+                            {
+                                selectedUnit.attackUnit(enemyUnits.get(i));
+                                selectedUnit = null;
+                            }
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            //Check terrain
             if(!found)
             {
                 CollisionResults results2 = new CollisionResults();
@@ -190,8 +234,21 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                 if(results2.size() > 0)
                 {
                     CollisionResult closest = results2.getClosestCollision();
-                    targetPosition = closest.getGeometry().getLocalTranslation().add(0, 2, 0);
-                    System.out.println(targetPosition);
+                    targetPosition = closest.getContactPoint();
+                    Vector3f closestTarget = null;
+                    float shortest = Float.MAX_VALUE;
+                    for(int i = 0; i < 100; i++)
+                    {
+                        for(int j = 0; j < 100; j++)
+                        {
+                            if(targetPosition.distance(worldPositions[i][j]) < shortest)
+                            {
+                                shortest = targetPosition.distance(worldPositions[i][j]);
+                                closestTarget = worldPositions[i][j];
+                            }
+                        }
+                    }
+                    targetPosition = closestTarget.add(0, 2, 0);
                     tryMoveActiveUnit();
                 }
             }
@@ -216,9 +273,9 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     //TODO: proper startpos
     public void addUnit(UnitType t)
     {
-        Vector3f startPos = new Vector3f(0, 2, 0);
+        Vector3f startPos = new Vector3f(1.4f, 2, 2);
         
-        client.send(new UnitCreatedMessage(t, startPos, isHosting));
+        client.send(new UnitCreatedMessage(units.size(), t, startPos, isHosting));
     }
     
     private void tryMoveActiveUnit()
@@ -274,7 +331,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                     @Override
                     public Object call()
                     {
-                        Unit unit = new Unit(((UnitCreatedMessage) m).getType(), unitNode, assetManager,
+                        Unit unit = new Unit(((UnitCreatedMessage) m).getType(), enemyUnitNode, assetManager,
                                 ((UnitCreatedMessage) m).getLocation(), units.size());
                         enemyUnits.add(unit);
                         return null;
@@ -291,6 +348,47 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                         Unit unit = new Unit(((UnitCreatedMessage) m).getType(), unitNode, assetManager,
                                 ((UnitCreatedMessage) m).getLocation(), units.size());
                         units.add(unit);
+                        return null;
+                    }
+                });
+            }
+        }
+        else if(m instanceof UnitDestroyedMessage)
+        {
+            if((isHosting && !((UnitDestroyedMessage) m).isPlayerA()) || (!isHosting && ((UnitDestroyedMessage) m).isPlayerA()))
+            {
+                app.enqueue(new Callable()
+                {
+                    @Override
+                    public Object call()
+                    {
+                        for(int i = 0; i < enemyUnits.size(); i++)
+                        {
+                            if(enemyUnits.get(i).getId() == ((UnitDestroyedMessage) m).getId())
+                            {
+                                enemyUnits.get(i).cleanup(enemyUnitNode);
+                                enemyUnits.remove(i);
+                            }
+                        }
+                        return null;
+                    }
+                });
+            }
+            else
+            {
+                app.enqueue(new Callable()
+                {
+                    @Override
+                    public Object call()
+                    {
+                        for(int i = 0; i < units.size(); i++)
+                        {
+                            if(units.get(i).getId() == ((UnitDestroyedMessage) m).getId())
+                            {
+                                units.get(i).cleanup(unitNode);
+                                units.remove(i);
+                            }
+                        }
                         return null;
                     }
                 });
