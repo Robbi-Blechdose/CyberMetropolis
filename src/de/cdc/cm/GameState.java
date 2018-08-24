@@ -31,6 +31,7 @@ import de.cdc.cm.units.Unit.UnitType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import jme3tools.optimize.GeometryBatchFactory;
 
 /**
@@ -210,10 +211,12 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         }
     }
     
+    //TODO: proper startpos
     public void addUnit(UnitType t)
     {
-        Unit unit = new Unit(t, unitNode, assetManager, new Vector3f(0, 1, 0), units.size());
-        units.add(unit);
+        Vector3f startPos = new Vector3f(0, 1, 0);
+        
+        client.send(new UnitCreatedMessage(t, startPos, isHosting));
     }
     
     private void tryMoveActiveUnit()
@@ -239,7 +242,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     }
 
     @Override
-    public void messageReceived(Client source, Message m)
+    public void messageReceived(Client source, final Message m)
     {
         if(m instanceof UnitUpdateMessage)
         {
@@ -247,9 +250,57 @@ public class GameState extends GenericState implements ActionListener, ClientSta
             {
                 for(int i = 0; i < ((UnitUpdateMessage) m).getUnitPositions().size(); i++)
                 {
-                    enemyUnits.get(i).getModel().setLocalTranslation(((UnitUpdateMessage) m).getUnitPositions().get(i));
+                    final int j = i;
+                    app.enqueue(new Callable()
+                    {
+                        @Override
+                        public Object call()
+                        {
+                            enemyUnits.get(j).getModel().setLocalTranslation(((UnitUpdateMessage) m).getUnitPositions().get(j));
+                            return null;
+                        }
+                    });
                 }
             }
         }
+        else if(m instanceof UnitCreatedMessage)
+        {
+            if((isHosting && !((UnitCreatedMessage) m).isPlayerA()) || (!isHosting && ((UnitCreatedMessage) m).isPlayerA()))
+            {
+                app.enqueue(new Callable()
+                {
+                    @Override
+                    public Object call()
+                    {
+                        Unit unit = new Unit(((UnitCreatedMessage) m).getType(), unitNode, assetManager,
+                                ((UnitCreatedMessage) m).getLocation(), units.size());
+                        enemyUnits.add(unit);
+                        return null;
+                    }
+                });
+            }
+            else
+            {
+                app.enqueue(new Callable()
+                {
+                    @Override
+                    public Object call()
+                    {
+                        Unit unit = new Unit(((UnitCreatedMessage) m).getType(), unitNode, assetManager,
+                                ((UnitCreatedMessage) m).getLocation(), units.size());
+                        units.add(unit);
+                        return null;
+                    }
+                });
+            }
+        }
+    }
+    
+    @Override
+    public void cleanup()
+    {
+        super.cleanup();
+        
+        client.close();
     }
 }

@@ -31,4 +31,9 @@ public class MenuState extends GenericState
         guis.menuGui(false);
         getStateManager().attach(new GameState(true));
     }
+    
+    public void quit()
+    {
+        System.exit(0);
+    }
 }
