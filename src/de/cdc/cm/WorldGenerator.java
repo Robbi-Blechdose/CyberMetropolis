@@ -31,11 +31,11 @@ public class WorldGenerator
             {
                 float height = (float) osn.eval(i * 0.1f, o * 0.1f)* 3f;
                 Node hex;
-                if (height < 1)
+                if (height < -1.4f)
                 {
                     hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon_Water.j3o");
                 }
-                else if(height < 1.5)
+                else if(height < -0.3f)
                 {
                     hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon_DeadGrass.j3o");
                 }
@@ -50,7 +50,9 @@ public class WorldGenerator
                     x = 1.445f;
                 }
                 hex.setLocalTranslation(o*1.43f*2+x,
-                        (float) osn.eval(i * 0.1f, o * 0.1f) * 3f, i*1.22f*2);  
+                        (float) osn.eval(i * 0.1f, o * 0.1f) * 3f, i*1.22f*2); 
+                
+                System.out.println(hex.getLocalTranslation());
             }
         }
     }
