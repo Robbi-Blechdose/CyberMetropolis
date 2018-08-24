@@ -6,8 +6,6 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
-import com.jme3.input.ChaseCamera;
-import com.jme3.input.FlyByCamera;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
@@ -18,9 +16,19 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
+import com.jme3.network.Client;
+import com.jme3.network.ClientStateListener;
+import com.jme3.network.Message;
+import com.jme3.network.MessageListener;
+import com.jme3.network.Network;
+import com.jme3.network.serializing.Serializer;
 import com.jme3.scene.Node;
+import de.cdc.cm.networking.GameServer;
+import de.cdc.cm.networking.UnitCreatedMessage;
+import de.cdc.cm.networking.UnitUpdateMessage;
 import de.cdc.cm.units.Unit;
 import de.cdc.cm.units.Unit.UnitType;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import jme3tools.optimize.GeometryBatchFactory;
@@ -30,8 +38,12 @@ import jme3tools.optimize.GeometryBatchFactory;
  * @author Julius
  * 
  */
-public class GameState extends GenericState implements ActionListener
+public class GameState extends GenericState implements ActionListener, ClientStateListener, MessageListener<Client>
 {
+    private Client client;
+    private GameServer server;
+    private boolean isHosting;
+    
     private FlyCamAppState flycam;
     
     private Node world;
@@ -42,15 +54,17 @@ public class GameState extends GenericState implements ActionListener
     private AmbientLight ambient;
     
     private List<Unit> units;
+    private List<Unit> enemyUnits;
     
     private Unit selectedUnit;
     private Vector3f targetPosition;
     
     private boolean uiModeEnabled = false;
     
-    public GameState()
+    public GameState(boolean isHosting)
     {
         super();
+        this.isHosting = isHosting;
     }
     
     @Override
@@ -78,6 +92,7 @@ public class GameState extends GenericState implements ActionListener
         rootNode.addLight(ambient);
         
         units = new ArrayList<Unit>();
+        enemyUnits = new ArrayList<Unit>();
         
         //Register actions
         inputManager.addMapping("Select", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
@@ -88,15 +103,49 @@ public class GameState extends GenericState implements ActionListener
         //Create flycam
         flycam = new FlyCamAppState();
         stateManager.attach(flycam);
+        
+        guis.gameGui(true);
+        
+        Serializer.registerClass(UnitUpdateMessage.class);
+        Serializer.registerClass(UnitCreatedMessage.class);
+        
+        if(isHosting)
+        {
+            server = new GameServer();
+        }
+        
+        try
+        {
+            client = Network.connectToServer(guis.getServerIp(), 5110);
+            client.addClientStateListener(this);
+            client.addMessageListener(this);
+            client.start();
+        }
+        catch(IOException e)
+        {
+            //Do nothing
+            System.out.println("Could not connect.");
+            e.printStackTrace();
+        }
     }
     
     @Override
     public void update(float tpf)
     {
+        if(isHosting)
+        {
+            server.update(tpf);
+        }
+        
+        List<Vector3f> unitPositions = new ArrayList<Vector3f>();
+        
         for(Unit unit : units)
         {
             unit.update(tpf);
+            unitPositions.add(unit.getModel().getLocalTranslation());
         }
+        
+        client.send(new UnitUpdateMessage(unitPositions, isHosting));
     }
 
     @Override
@@ -174,6 +223,33 @@ public class GameState extends GenericState implements ActionListener
             selectedUnit.setTargetPosition(targetPosition);
             selectedUnit = null;
             targetPosition = null;
+        }
+    }
+
+    @Override
+    public void clientConnected(Client c)
+    {
+        
+    }
+
+    @Override
+    public void clientDisconnected(Client c, DisconnectInfo info)
+    {
+        
+    }
+
+    @Override
+    public void messageReceived(Client source, Message m)
+    {
+        if(m instanceof UnitUpdateMessage)
+        {
+            if((isHosting && !((UnitUpdateMessage) m).isPlayerA()) || (!isHosting && ((UnitUpdateMessage) m).isPlayerA()))
+            {
+                for(int i = 0; i < ((UnitUpdateMessage) m).getUnitPositions().size(); i++)
+                {
+                    enemyUnits.get(i).getModel().setLocalTranslation(((UnitUpdateMessage) m).getUnitPositions().get(i));
+                }
+            }
         }
     }
 }
