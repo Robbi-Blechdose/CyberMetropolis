@@ -19,6 +19,7 @@ public class UnitDestroyedMessage extends AbstractMessage
     public UnitDestroyedMessage(int id, boolean isPlayerA)
     {
         this.id = id;
+        this.playerA = isPlayerA;
     }
     
     public int getId()
