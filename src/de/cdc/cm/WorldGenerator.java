@@ -57,6 +57,8 @@ public class WorldGenerator
                 positions[i][o] = hex.getLocalTranslation();
             }
         }
+                generateMountains();
+                //generateEdge();
     }
     
     public Vector3f[][] getWorldPositions()
@@ -64,12 +66,26 @@ public class WorldGenerator
         return positions;
     }
     
-        private void generateMountains()
+    private void generateMountains()
     {
         Node berg;
         berg = (Node) assetManager.loadModel("Models/berge.j3o");
-        berg.setLocalTranslation(1, 10, 1);
+        berg.setLocalTranslation(-22, 0, 1);
         berg.setLocalScale(10);
         world.attachChild(berg);
     }
+    
+    private void generateEdge()
+    {
+        
+        for(int i = 0; i < 100; i++)
+        {
+            Node hex;
+            hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon_MountainEdge.j3o");  
+            world.attachChild(hex);       
+            hex.setLocalTranslation(i * 1.43f * 2, -2, -1.22f * 2); 
+        }
+                
+    }
+    
 }
