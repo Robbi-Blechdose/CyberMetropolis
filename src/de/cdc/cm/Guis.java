@@ -68,9 +68,9 @@ public class Guis
         join.setName("JoinGame");
         join.setFontSize(60f);
         join.setColor(new ColorRGBA(0f, 0f, 1f, 1f));
-        join.setHighlightColor(ColorRGBA.Blue);
+        join.setHighlightColor(ColorRGBA.Yellow);
         join.setPreferredSize(new Vector3f(app.getSettings().getWidth() / 4, app.getSettings().getHeight() / 9, 1));
-        join.setLocalTranslation(app.getSettings().getWidth() / 2.6f, app.getSettings().getHeight() / 1.45f, 1);
+        join.setLocalTranslation(app.getSettings().getWidth() / 2.6f, app.getSettings().getHeight() / 1.46f, 1);
         join.addClickCommands(new Command<Button>()
         {
             @Override
@@ -92,10 +92,10 @@ public class Guis
         host.setName("HostGame");
         host.setFontSize(60f);
         host.setColor(new ColorRGBA(0f, 0f, 1f, 1f));
-        host.setHighlightColor(ColorRGBA.Blue);
+        host.setHighlightColor(ColorRGBA.Yellow);
         host.setPreferredSize(new Vector3f(app.getSettings().getWidth() / 4, app.getSettings().getHeight() / 9, 1));
         host.setLocalTranslation((app.getSettings().getWidth() / 2) - (host.getPreferredSize().x / 2),
-                app.getSettings().getHeight() / 2.15f, 1);
+                app.getSettings().getHeight() / 2.2f, 1);
         host.addClickCommands(new Command<Button>()
         {
             @Override
@@ -104,7 +104,24 @@ public class Guis
                 app.getStateManager().getState(MenuState.class).host();
             }
         });
-        menuNode.attachChild(host);
+        menuNode.attachChild(host);    
+        Button quit = new Button("Quit Game");
+        quit.setName("QuitGame");
+        quit.setFontSize(60f);
+        quit.setColor(new ColorRGBA(0f, 0f, 1f, 1f));
+        quit.setHighlightColor(ColorRGBA.Yellow);
+        quit.setPreferredSize(new Vector3f(app.getSettings().getWidth() / 4, app.getSettings().getHeight() / 8, 1));
+        quit.setLocalTranslation((app.getSettings().getWidth() / 2) - (host.getPreferredSize().x / 2),
+                app.getSettings().getHeight() / 4.4f, 1);
+        quit.addClickCommands(new Command<Button>()
+        {
+            @Override
+            public void execute(Button source)
+            {
+                app.getStateManager().getState(MenuState.class).quit();
+            }
+        });
+        menuNode.attachChild(quit);
     }
     
     public void gameGui(boolean display)
