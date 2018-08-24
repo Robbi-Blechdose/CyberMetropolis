@@ -3,6 +3,7 @@ package de.cdc.cm;
 import com.jme3.asset.AssetManager;
 import com.jme3.math.Quaternion;
 import com.jme3.scene.Node;
+import java.util.Random;
 
 /**
  *
@@ -23,9 +24,10 @@ public class WorldGenerator
     
     private void generateWorld()
     {
+        OpenSimplexNoise osn = new OpenSimplexNoise();
         for(int i = 0; i < 100; i++)
         {
-            for(int o = 0; o< 100; o++)
+            for(int o = 0; o < 100; o++)
             {
                 Node hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon.j3o");
                 world.attachChild(hex);
@@ -34,24 +36,10 @@ public class WorldGenerator
                 {
                     x = 1.445f;
                 }
-                hex.setLocalTranslation(o*1.43f*2+x, 0, i*1.22f*2);  
+                hex.setLocalTranslation(o*1.43f*2+x,
+                        (float) osn.eval(i * 0.1f, o * 0.1f) * 3f, i*1.22f*2);  
             }
         }
     }
-    
-    public float[][] GenerateWhiteNoise(int width, int height)
-    {
-      Random random = new Random(0); //Seed to 0 for testing
-      float[][] noise = GetEmptyArray(width, height);
- 
-      for (int i = 0; i < width; i++)
-      {
-          for (int j = 0; j < height; j++)
-         {
-             noise[i][j] = (float)random.NextDouble() % 1;
-          }
-      }
- 
-    return noise;
-   }
+    //(float)random.nextFloat()
 }
