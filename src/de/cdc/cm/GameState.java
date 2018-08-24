@@ -210,13 +210,11 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         }
     }
     
+    //TODO: proper starpos
     public void addUnit(UnitType t)
     {
         Vector3f startPos = new Vector3f(0, 1, 0);
-//        
-//        Unit unit = new Unit(t, unitNode, assetManager, startPos, units.size());
-//        units.add(unit);
-//        
+        
         client.send(new UnitCreatedMessage(t, startPos, isHosting));
     }
     
