@@ -161,8 +161,11 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     {
         if(initPhase)
         {
-            flycam.getCamera().setMoveSpeed(10f);
-            initPhase = false;
+            if(flycam.getCamera() != null)
+            {
+                flycam.getCamera().setMoveSpeed(20f);
+                initPhase = false;
+            }
         }
         
         if(isHosting)
