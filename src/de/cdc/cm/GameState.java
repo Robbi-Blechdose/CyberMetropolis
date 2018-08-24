@@ -31,6 +31,7 @@ import de.cdc.cm.units.Unit.UnitType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import jme3tools.optimize.GeometryBatchFactory;
 
 /**
@@ -210,7 +211,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         }
     }
     
-    //TODO: proper starpos
+    //TODO: proper startpos
     public void addUnit(UnitType t)
     {
         Vector3f startPos = new Vector3f(0, 1, 0);
@@ -241,7 +242,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     }
 
     @Override
-    public void messageReceived(Client source, Message m)
+    public void messageReceived(Client source, final Message m)
     {
         if(m instanceof UnitUpdateMessage)
         {
@@ -249,7 +250,16 @@ public class GameState extends GenericState implements ActionListener, ClientSta
             {
                 for(int i = 0; i < ((UnitUpdateMessage) m).getUnitPositions().size(); i++)
                 {
-                    enemyUnits.get(i).getModel().setLocalTranslation(((UnitUpdateMessage) m).getUnitPositions().get(i));
+                    final int j = i;
+                    app.enqueue(new Callable()
+                    {
+                        @Override
+                        public Object call()
+                        {
+                            enemyUnits.get(j).getModel().setLocalTranslation(((UnitUpdateMessage) m).getUnitPositions().get(j));
+                            return null;
+                        }
+                    });
                 }
             }
         }
@@ -257,15 +267,31 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         {
             if((isHosting && !((UnitCreatedMessage) m).isPlayerA()) || (!isHosting && ((UnitCreatedMessage) m).isPlayerA()))
             {
-                Unit unit = new Unit(((UnitCreatedMessage) m).getType(), unitNode, assetManager,
-                        ((UnitCreatedMessage) m).getLocation(), units.size());
-                enemyUnits.add(unit);
+                app.enqueue(new Callable()
+                {
+                    @Override
+                    public Object call()
+                    {
+                        Unit unit = new Unit(((UnitCreatedMessage) m).getType(), unitNode, assetManager,
+                                ((UnitCreatedMessage) m).getLocation(), units.size());
+                        enemyUnits.add(unit);
+                        return null;
+                    }
+                });
             }
             else
             {
-                Unit unit = new Unit(((UnitCreatedMessage) m).getType(), unitNode, assetManager,
-                        ((UnitCreatedMessage) m).getLocation(), units.size());
-                units.add(unit);
+                app.enqueue(new Callable()
+                {
+                    @Override
+                    public Object call()
+                    {
+                        Unit unit = new Unit(((UnitCreatedMessage) m).getType(), unitNode, assetManager,
+                                ((UnitCreatedMessage) m).getLocation(), units.size());
+                        units.add(unit);
+                        return null;
+                    }
+                });
             }
         }
     }
