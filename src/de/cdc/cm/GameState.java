@@ -69,6 +69,8 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     
     private boolean uiModeEnabled = false;
     
+    private boolean initPhase = true;
+    
     //SFX 'n' stuff
     private AudioNode pootis;
     private Node deathParticles;
@@ -157,6 +159,12 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     @Override
     public void update(float tpf)
     {
+        if(initPhase)
+        {
+            flycam.getCamera().setMoveSpeed(10f);
+            initPhase = false;
+        }
+        
         if(isHosting)
         {
             server.update(tpf);
