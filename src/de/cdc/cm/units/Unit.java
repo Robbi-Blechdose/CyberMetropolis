@@ -89,6 +89,11 @@ public class Unit
         }
     }
     
+    public void dontDead()
+    {
+        dead = false;
+    }
+    
     public void cleanup(Node unitNode)
     {
         unitNode.detachChild(model);

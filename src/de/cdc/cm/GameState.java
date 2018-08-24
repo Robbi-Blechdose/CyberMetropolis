@@ -154,13 +154,19 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         {
             unit.update(tpf);
             unitPositions.add(unit.getModel().getLocalTranslation());
-            if(unit.isDead())
-            {
-                client.send(new UnitDestroyedMessage(unit.getId(), isHosting));
-            }
         }
         
         client.send(new UnitUpdateMessage(unitPositions, isHosting));
+        
+        for(Unit unit : enemyUnits)
+        {
+            if(unit.isDead())
+            {
+                //                                                  It's an enemy unit, so INVERT the playerA/playerB thing
+                client.send(new UnitDestroyedMessage(unit.getId(), !isHosting));
+                unit.dontDead();
+            }
+        }
     }
 
     @Override
@@ -332,7 +338,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                     public Object call()
                     {
                         Unit unit = new Unit(((UnitCreatedMessage) m).getType(), enemyUnitNode, assetManager,
-                                ((UnitCreatedMessage) m).getLocation(), units.size());
+                                ((UnitCreatedMessage) m).getLocation(), enemyUnits.size());
                         enemyUnits.add(unit);
                         return null;
                     }
@@ -368,6 +374,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                             {
                                 enemyUnits.get(i).cleanup(enemyUnitNode);
                                 enemyUnits.remove(i);
+                                break;
                             }
                         }
                         return null;
@@ -387,6 +394,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                             {
                                 units.get(i).cleanup(unitNode);
                                 units.remove(i);
+                                break;
                             }
                         }
                         return null;
