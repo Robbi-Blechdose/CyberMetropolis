@@ -31,13 +31,17 @@ public class WorldGenerator
             {
                 float height = (float) osn.eval(i * 0.1f, o * 0.1f)* 3f;
                 Node hex;
-                if (height < 1.5)
+                if (height < 1)
                 {
-                    hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon.j3o");
+                    hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon_Water.j3o");
+                }
+                else if(height < 1.5)
+                {
+                    hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon_DeadGrass.j3o");
                 }
                 else
                 {
-                    hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon.j3o");
+                    hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon_Grass.j3o");
                 }
                 world.attachChild(hex);
                 float x = 0;      
