@@ -33,9 +33,10 @@ public class WorldGenerator
             {
                 float height = (float) osn.eval(i * 0.1f, o * 0.1f)* 3f;
                 Node hex;
-                if (height < -1.4f)
+                if (height <= -1.2f)
                 {
                     hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon_Water.j3o");
+                    height = -1.2f;
                 }
                 else if(height < -0.3f)
                 {
@@ -51,7 +52,7 @@ public class WorldGenerator
                 {
                     x = 1.445f;
                 }
-                hex.setLocalTranslation(o * 1.43f * 2 + x, (float) osn.eval(i * 0.1f, o * 0.1f) * 3f, i * 1.22f * 2); 
+                hex.setLocalTranslation(o * 1.43f * 2 + x, height, i * 1.22f * 2); 
                 
                 positions[i][o] = hex.getLocalTranslation();
             }
@@ -61,5 +62,14 @@ public class WorldGenerator
     public Vector3f[][] getWorldPositions()
     {
         return positions;
+    }
+    
+        private void generateMountains()
+    {
+        Node berg;
+        berg = (Node) assetManager.loadModel("Models/berge.j3o");
+        berg.setLocalTranslation(1, 10, 1);
+        berg.setLocalScale(10);
+        world.attachChild(berg);
     }
 }
