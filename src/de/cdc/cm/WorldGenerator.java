@@ -58,7 +58,7 @@ public class WorldGenerator
             }
         }
                 generateMountains();
-                //generateEdge();
+                generateEdge();
     }
     
     public Vector3f[][] getWorldPositions()
@@ -77,15 +77,54 @@ public class WorldGenerator
     
     private void generateEdge()
     {
-        
-        for(int i = 0; i < 100; i++)
+        for(int o = 1; o < 4; o++)
         {
-            Node hex;
-            hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon_MountainEdge.j3o");  
-            world.attachChild(hex);       
-            hex.setLocalTranslation(i * 1.43f * 2, -2, -1.22f * 2); 
+            for(int i = 0; i < 100; i++)
+            {
+                Node hex;
+                hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon_MountainEdge.j3o");  
+                world.attachChild(hex);       
+                hex.setLocalTranslation(i * 1.43f * 2, -1.2f+1.8f*o, -1.22f * 2); 
+            }
         }
-                
+        for(int o = 1; o < 4; o++)
+        {
+            for(int i = 0; i < 100; i++)
+            {
+                Node hex;
+                hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon_MountainEdge.j3o");  
+                world.attachChild(hex);       
+                hex.setLocalTranslation(i * 1.43f * 2+1.445f, -1.2f+1.8f*o, 122f * 2); 
+            }
+        }
+        for(int o = 1; o < 4; o++)
+        {
+            for(int i = 0; i < 102; i++)
+            {
+                Node hex;
+                hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon_MountainEdge.j3o");  
+                world.attachChild(hex);  
+                float x = 0f;
+                if(i % 2 == 0)
+                {
+                    x = 1.445f;
+                }
+                hex.setLocalTranslation(-1.43f * 2-x+1.445f, -1.2f+1.8f*o, i * 1.22f * 2-2.44f); 
+            }
+            for(int i = 0; i < 102; i++)
+            {
+                Node hex;
+                hex = (Node) assetManager.loadModel("Models/Hexagon/Hexagon_MountainEdge.j3o");  
+                world.attachChild(hex);  
+                float x = 0f;
+                if(i % 2 == 0)
+                {
+                    x = 1.445f;
+                }
+                hex.setLocalTranslation(-1.43f * 2-x+1.445f+143f*2, -1.2f+1.8f*o, i * 1.22f * 2-2.44f); 
+            }
+        }
     }
     
 }
+//1.2888689

@@ -1,6 +1,9 @@
 Material My Material : Common/MatDefs/Light/Lighting.j3md {
      MaterialParameters {
         DiffuseMap : Textures/deadgrass.png
+        UseVertexColor : false
+        UseMaterialColors : false
+        VertexLighting : false
      }
     AdditionalRenderState {
     }
