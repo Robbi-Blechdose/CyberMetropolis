@@ -1,5 +1,6 @@
 package de.cdc.cm;
 
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.simsilica.lemur.Button;
@@ -65,9 +66,11 @@ public class Guis
         
         Button join = new Button("Join Game");
         join.setName("JoinGame");
-        join.setFontSize(20f);
-        join.setPreferredSize(new Vector3f(app.getSettings().getWidth() / 8, app.getSettings().getHeight() / 9, 1));
-        join.setLocalTranslation(app.getSettings().getWidth() / 3, app.getSettings().getHeight() / 1.5f, 1);
+        join.setFontSize(60f);
+        join.setColor(new ColorRGBA(0f, 0f, 1f, 1f));
+        join.setHighlightColor(ColorRGBA.Blue);
+        join.setPreferredSize(new Vector3f(app.getSettings().getWidth() / 4, app.getSettings().getHeight() / 9, 1));
+        join.setLocalTranslation(app.getSettings().getWidth() / 2.6f, app.getSettings().getHeight() / 1.45f, 1);
         join.addClickCommands(new Command<Button>()
         {
             @Override
@@ -78,17 +81,21 @@ public class Guis
         });
         menuNode.attachChild(join);
         
-        serverIp = new TextField("localhost");
-        serverIp.setPreferredSize(new Vector3f(app.getSettings().getWidth() / 8, app.getSettings().getHeight() / 9, 1));
-        serverIp.setLocalTranslation(app.getSettings().getWidth() / 1.5f, app.getSettings().getHeight() / 1.5f, 1);
+        serverIp = new TextField("Please enter the host IP here");
+        serverIp.setFontSize(17f);
+        serverIp.setColor(ColorRGBA.Red);
+        serverIp.setPreferredSize(new Vector3f(app.getSettings().getWidth() / 6, app.getSettings().getHeight() / 28, 1));
+        serverIp.setLocalTranslation(app.getSettings().getWidth() / 1.24f, app.getSettings().getHeight() / 1.15f, 1);
         menuNode.attachChild(serverIp);
         
         Button host = new Button("Host Game");
         host.setName("HostGame");
-        host.setFontSize(20f);
-        host.setPreferredSize(new Vector3f(app.getSettings().getWidth() / 8, app.getSettings().getHeight() / 9, 1));
+        host.setFontSize(60f);
+        host.setColor(new ColorRGBA(0f, 0f, 1f, 1f));
+        host.setHighlightColor(ColorRGBA.Blue);
+        host.setPreferredSize(new Vector3f(app.getSettings().getWidth() / 4, app.getSettings().getHeight() / 9, 1));
         host.setLocalTranslation((app.getSettings().getWidth() / 2) - (host.getPreferredSize().x / 2),
-                app.getSettings().getHeight() / 2.3f, 1);
+                app.getSettings().getHeight() / 2.15f, 1);
         host.addClickCommands(new Command<Button>()
         {
             @Override
