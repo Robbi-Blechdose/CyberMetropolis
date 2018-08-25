@@ -2,6 +2,8 @@ package de.cdc.cm;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.math.Vector3f;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.scene.Node;
 
 /**
@@ -68,15 +70,60 @@ public class WorldGenerator
     
     private void generateMountains()
     {
-        Node berg;
-        berg = (Node) assetManager.loadModel("Models/berge.j3o");
-        berg.setLocalTranslation(-22, 0, 1);
-        berg.setLocalScale(10);
-        world.attachChild(berg);
+        for(int i = 0; i < 4; i++)
+        {
+            Node berg;
+            if(i % 2 == 0)
+            {
+                berg = (Node) assetManager.loadModel("Models/berge/berge.j3o");
+                berg.setLocalTranslation(-21.8f, 5.7f, 20+(80*i));
+            }
+            else
+            {
+                berg = (Node) assetManager.loadModel("Models/berge4/berge4.j3o");
+                berg.setLocalTranslation(-22.2f, 5f, 20+(80*i));
+            }
+            berg.setLocalScale(10);
+            world.attachChild(berg);
+        }
+        for(int i = 0; i < 4; i++)
+        {
+            Node berg;
+            if(i % 2 == 0)
+            {
+                berg = (Node) assetManager.loadModel("Models/berge/berge.j3o");
+                berg.setLocalTranslation(-21.6f+1.445f*3+162.8f*2, 5.7f, 20+(80*i));
+            }
+            else
+            {
+                berg = (Node) assetManager.loadModel("Models/berge4/berge4.j3o");
+                berg.setLocalTranslation(-22f+1.445f*3+162.8f*2, 5f, 20+(80*i));
+            }
+            berg.setLocalScale(10);
+            world.attachChild(berg);
+        }
+        for(int i = 0; i < 4; i++)
+        {
+            Node berg;
+            if(i % 2 == 0)
+            {
+                berg = (Node) assetManager.loadModel("Models/berge/berge.j3o");
+                berg.setLocalTranslation(-21.6f+1.445f*3+162.8f*2, 5.7f, 20+(80*i));
+            }
+            else
+            {
+                berg = (Node) assetManager.loadModel("Models/berge4/berge4.j3o");
+                berg.setLocalTranslation(-22f+1.445f*3+162.8f*2, 5f, 20+(80*i));
+            }
+            berg.setLocalScale(10);
+            world.attachChild(berg);
+        }
+        //berg.setLocalRotation(Quaternion().fromAngleAxis(FastMath.DEG_TO_RAD*90, new Vector3f(0,0,1)));
     }
     
     private void generateEdge()
     {
+        
         for(int o = 1; o < 4; o++)
         {
             for(int i = 0; i < 100; i++)
@@ -121,7 +168,7 @@ public class WorldGenerator
                 {
                     x = 1.445f;
                 }
-                hex.setLocalTranslation(-1.43f * 2-x+1.445f+143f*2, -1.2f+1.8f*o, i * 1.22f * 2-2.44f); 
+                hex.setLocalTranslation(-1.43f * 2-x+1.445f*3+143f*2, -1.2f+1.8f*o, i * 1.22f * 2-2.44f); 
             }
         }
     }

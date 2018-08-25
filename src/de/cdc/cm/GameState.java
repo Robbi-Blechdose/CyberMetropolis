@@ -1,5 +1,4 @@
 package de.cdc.cm;
-
 import com.jme3.app.Application;
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.state.AppStateManager;
@@ -19,6 +18,7 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
+
 import com.jme3.network.Client;
 import com.jme3.network.ClientStateListener;
 import com.jme3.network.Message;
@@ -163,7 +163,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         {
             if(flycam.getCamera() != null)
             {
-                flycam.getCamera().setMoveSpeed(20f);
+                flycam.getCamera().setMoveSpeed(60f);
                 initPhase = false;
             }
         }
