@@ -76,12 +76,12 @@ public class WorldGenerator
             if(i % 2 == 0)
             {
                 berg = (Node) assetManager.loadModel("Models/berge/berge.j3o");
-                berg.setLocalTranslation(-21.8f, 5.7f, 20+(80*i));
+                berg.setLocalTranslation(-21.8f, 5.7f, -10+(80*i));
             }
             else
             {
                 berg = (Node) assetManager.loadModel("Models/berge4/berge4.j3o");
-                berg.setLocalTranslation(-22.2f, 5f, 20+(80*i));
+                berg.setLocalTranslation(-22.2f, 5f, -10+(80*i));
             }
             berg.setLocalScale(10);
             world.attachChild(berg);
@@ -92,12 +92,12 @@ public class WorldGenerator
             if(i % 2 == 0)
             {
                 berg = (Node) assetManager.loadModel("Models/berge/berge.j3o");
-                berg.setLocalTranslation(-21.6f+1.445f*3+162.8f*2, 5.7f, 20+(80*i));
+                berg.setLocalTranslation(-21.6f+1.445f*3+162.8f*2, 5.7f,-10+ (80*i));
             }
             else
             {
                 berg = (Node) assetManager.loadModel("Models/berge4/berge4.j3o");
-                berg.setLocalTranslation(-22f+1.445f*3+162.8f*2, 5f, 20+(80*i));
+                berg.setLocalTranslation(-22f+1.445f*3+162.8f*2, 5f, -10+(80*i));
             }
             berg.setLocalScale(10);
             world.attachChild(berg);
@@ -108,17 +108,34 @@ public class WorldGenerator
             if(i % 2 == 0)
             {
                 berg = (Node) assetManager.loadModel("Models/berge/berge.j3o");
-                berg.setLocalTranslation(-21.6f+1.445f*3+162.8f*2, 5.7f, 20+(80*i));
+                berg.setLocalTranslation(-21.6f+1.445f*3+132.8f*2-(80*i), 5.6f, -23.8f);
             }
             else
             {
                 berg = (Node) assetManager.loadModel("Models/berge4/berge4.j3o");
-                berg.setLocalTranslation(-22f+1.445f*3+162.8f*2, 5f, 20+(80*i));
+                berg.setLocalTranslation(-22f+1.445f*3+132.8f*2-(80*i), 5.6f, -23.8f);
             }
             berg.setLocalScale(10);
+            berg.setLocalRotation(new Quaternion().fromAngleAxis(FastMath.DEG_TO_RAD*90, new Vector3f(0,1,0)));
             world.attachChild(berg);
         }
-        //berg.setLocalRotation(Quaternion().fromAngleAxis(FastMath.DEG_TO_RAD*90, new Vector3f(0,0,1)));
+        for(int i = 0; i < 4; i++)
+        {
+            Node berg;
+            if(i % 2 == 0)
+            {
+                berg = (Node) assetManager.loadModel("Models/berge/berge.j3o");
+                berg.setLocalTranslation(-21.6f+1.445f*3+132.8f*2-(80*i), 5.6f, 263.5f);
+            }
+            else
+            {
+                berg = (Node) assetManager.loadModel("Models/berge4/berge4.j3o");
+                berg.setLocalTranslation(-22f+1.445f*3+132.8f*2-(80*i), 5.6f, 263.5f);
+            }
+            berg.setLocalScale(10);
+            berg.setLocalRotation(new Quaternion().fromAngleAxis(FastMath.DEG_TO_RAD*90, new Vector3f(0,1,0)));
+            world.attachChild(berg);
+        }
     }
     
     private void generateEdge()
