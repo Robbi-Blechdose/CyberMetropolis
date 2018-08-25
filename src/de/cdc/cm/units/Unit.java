@@ -121,7 +121,7 @@ public class Unit
     {
         if(isMoving)
         {
-            if(model.getLocalTranslation().distance(targetPos) < 0.1f)
+            if(model.getLocalTranslation().distance(targetPos) < 0.15f)
             {
                 isMoving = false;
             }

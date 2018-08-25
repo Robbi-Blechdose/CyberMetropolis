@@ -117,7 +117,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         worldPositions = wg.getWorldPositions();
         
         sun = new DirectionalLight();
-        sun.setColor(ColorRGBA.White);
+        sun.setColor(new ColorRGBA(0.6f, 0.6f, 0.6f, 0.6f));
         sun.setDirection(new Vector3f(2.8f, -2.8f, -2.8f).normalizeLocal());
         rootNode.addLight(sun);
         

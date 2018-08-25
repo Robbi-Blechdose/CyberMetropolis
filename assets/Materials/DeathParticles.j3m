@@ -1,4 +1,8 @@
-Material My Material : Common/MatDefs/Light/Lighting.j3md {
+Material My Material : Common/MatDefs/Misc/Particle.j3md {
      MaterialParameters {
+        Texture : Textures/EKUSUPUROSHION!!.png
      }
+    AdditionalRenderState {
+      AlphaTestFalloff 0.0
+    }
 }
