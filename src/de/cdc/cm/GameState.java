@@ -363,7 +363,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                     public Object call()
                     {
                         Unit unit = new Unit(((UnitCreatedMessage) m).getType(), enemyUnitNode, assetManager,
-                                ((UnitCreatedMessage) m).getLocation(), enemyUnits.size());
+                                ((UnitCreatedMessage) m).getLocation(), enemyUnits.size(), true);
                         enemyUnits.add(unit);
                         return null;
                     }
@@ -377,7 +377,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                     public Object call()
                     {
                         Unit unit = new Unit(((UnitCreatedMessage) m).getType(), unitNode, assetManager,
-                                ((UnitCreatedMessage) m).getLocation(), units.size());
+                                ((UnitCreatedMessage) m).getLocation(), units.size(), false);
                         units.add(unit);
                         return null;
                     }

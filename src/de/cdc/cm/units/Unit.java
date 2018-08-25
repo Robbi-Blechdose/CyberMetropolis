@@ -30,15 +30,23 @@ public class Unit
     private int damage;
     private boolean dead = false;
     
-    public Unit(UnitType t, Node unitNode, AssetManager assetManager, Vector3f startPos, int id)
+    public Unit(UnitType t, Node unitNode, AssetManager assetManager, Vector3f startPos, int id, boolean isPlayerA)
     {
         this.unitType = t;
+        if(isPlayerA)
+        {
+            model = (Node) assetManager.loadModel("Models/Units/Unit_blue.j3o");
+        }
+        else
+        {
+            model = (Node) assetManager.loadModel("Models/Units/Unit_red.j3o");
+        }
         
         switch(unitType)
         {
             case SOLDIER:
             {
-                model = (Node) assetManager.loadModel("Models/Units/Soldier.j3o");
+                ((Node) model.getChild("Weapon")).attachChild(assetManager.loadModel("Models/Weapons/Sword.j3o"));
                 health = 100;
                 damage = 40;
                 break;
