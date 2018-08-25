@@ -1,6 +1,9 @@
 package de.cdc.cm.units;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.audio.AudioData;
+import com.jme3.audio.AudioNode;
+import com.jme3.effect.ParticleEmitter;
 import com.jme3.math.Vector3f;
 import com.jme3.network.serializing.Serializable;
 import com.jme3.scene.Node;
@@ -15,14 +18,19 @@ public class Unit
 {
     public static enum UnitType
     {
-        SOLDIER
+        SOLDIER, SNIPER
     };
     
     private int id;
     
     private UnitType unitType;
+    
     private Node model;
+    
     private Label healthLabel;
+    private AudioNode pootis;
+    private AudioNode attackSFX;
+    private Node deathParticles;
     
     private Vector3f oldPos;
     private Vector3f targetPos;
@@ -50,9 +58,15 @@ public class Unit
             case SOLDIER:
             {
                 ((Node) model.getChild("Weapon")).attachChild(assetManager.loadModel("Models/Weapons/Sword.j3o"));
+                attackSFX = new AudioNode(assetManager, "Sounds/knife.wav", AudioData.DataType.Buffer);
                 health = 100;
                 damage = 40;
                 range = 2.9f;
+                break;
+            }
+            case SNIPER:
+            {
+                //TODO
                 break;
             }
         }
@@ -62,10 +76,23 @@ public class Unit
         this.id = id;
         
         healthLabel = new Label("" + health);
-        healthLabel.setLocalTranslation(0, 2, 0);
+        healthLabel.setLocalTranslation(0, 20, 0);
+        healthLabel.setLocalScale(1000, 200, 1);
         model.attachChild(healthLabel);
         
         unitNode.attachChild(model);
+        
+        //SFX 'n' stuff
+        pootis = new AudioNode(assetManager, "Sounds/Pootis.wav", AudioData.DataType.Buffer);
+        pootis.setVolume(0.4f);
+        model.attachChild(pootis);
+        
+        attackSFX.setVolume(0.4f);
+        model.attachChild(attackSFX);
+        
+        //Particles 'n' stuff
+        deathParticles = (Node) assetManager.loadModel("Models/DeathParticles.j3o");
+        unitNode.attachChild(deathParticles);
     }
     
     public void attackUnit(Unit enemy)
@@ -73,14 +100,18 @@ public class Unit
         if(enemy.getModel().getLocalTranslation().distance(model.getLocalTranslation()) <= range)
         {
             enemy.damageUnit(damage);
+            attackSFX.play();
         }
     }
     
     public void setTargetPosition(Vector3f targetPos)
     {
-        this.oldPos = model.getLocalTranslation().clone();
-        this.targetPos = targetPos;
-        isMoving = true;
+        if(model.getLocalTranslation().distance(targetPos) <= 2.9f)
+        {
+            this.oldPos = model.getLocalTranslation().clone();
+            this.targetPos = targetPos;
+            isMoving = true;
+        }
     }
     
     public void update(float tpf)
@@ -104,6 +135,9 @@ public class Unit
         if(health <= 0)
         {
             dead = true;
+            pootis.play();
+            deathParticles.setLocalTranslation(model.getLocalTranslation().add(0, 2, 0));
+            ((ParticleEmitter) deathParticles.getChild("Emitter")).emitAllParticles();
         }
     }
     
@@ -115,6 +149,7 @@ public class Unit
     public void cleanup(Node unitNode)
     {
         unitNode.detachChild(model);
+        unitNode.detachChild(deathParticles);
     }
     
     public Node getModel()
