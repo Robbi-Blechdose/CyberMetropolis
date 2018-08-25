@@ -1,10 +1,8 @@
 package de.cdc.cm;
+
 import com.jme3.app.Application;
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.state.AppStateManager;
-import com.jme3.audio.AudioData;
-import com.jme3.audio.AudioNode;
-import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.effect.ParticleEmitter;
@@ -18,13 +16,15 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
-
 import com.jme3.network.Client;
 import com.jme3.network.ClientStateListener;
 import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
 import com.jme3.network.Network;
 import com.jme3.network.serializing.Serializer;
+import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.BloomFilter;
+import com.jme3.post.filters.BloomFilter.GlowMode;
 import com.jme3.scene.Node;
 import de.cdc.cm.buildings.Building;
 import de.cdc.cm.buildings.Building.BuildingType;
@@ -36,7 +36,6 @@ import de.cdc.cm.units.Unit;
 import de.cdc.cm.units.Unit.UnitType;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import jme3tools.optimize.GeometryBatchFactory;
@@ -70,6 +69,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     private int unitId = 0;
     private List<Building> buildings;
     private List<Building> enemyBuildings;
+    private Vector3f spawnPos;
     
     private Unit selectedUnit;
     private Vector3f targetPosition;
@@ -80,6 +80,10 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     
     //Particles 'n' stuff
     private Node deathParticles;
+    
+    //Post effects because why the duck not
+    private FilterPostProcessor fpp;
+    private BloomFilter bloomFilter;
     
     public GameState(boolean isHosting)
     {
@@ -169,6 +173,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         {
             Building hq = new Building(buildingNode, assetManager, true, BuildingType.HEADQUARTERS, new Vector3f(35.765f, 2f - 0.361f, 24.4f));
             buildings.add(hq);
+            spawnPos = new Vector3f(35.765f + 2.86f, 2f - 0.361f, 24.4f);
             
             Building ehq = new Building(buildingNode, assetManager, false, BuildingType.HEADQUARTERS, new Vector3f(220.219f, 2f - 0.086f, 222.04f));
             enemyBuildings.add(ehq);
@@ -177,10 +182,17 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         {
             Building hq = new Building(buildingNode, assetManager, true, BuildingType.HEADQUARTERS, new Vector3f(220.219f, 2f - 0.086f, 222.04f));
             buildings.add(hq);
+            spawnPos = new Vector3f(220.219f - 2.86f, 2f - 0.086f, 222.04f);
             
             Building ehq = new Building(buildingNode, assetManager, false, BuildingType.HEADQUARTERS, new Vector3f(35.765f, 2f - 0.361f, 24.4f));
             enemyBuildings.add(ehq);
         }
+        
+        fpp = new FilterPostProcessor(assetManager);
+        fpp.setNumSamples(settings.getAaSamples());
+        bloomFilter = new BloomFilter(GlowMode.Objects);
+        fpp.addFilter(bloomFilter);
+        viewport.addProcessor(fpp);
     }
     
     @Override
@@ -351,12 +363,9 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         }
     }
     
-    //TODO: proper startpos
     public void addUnit(UnitType t)
     {
-        Vector3f startPos = new Vector3f(1.4f, 2, 2);
-        
-        client.send(new UnitCreatedMessage(unitId, t, startPos, isHosting));
+        client.send(new UnitCreatedMessage(unitId, t, spawnPos, isHosting));
         unitId++;
     }
     

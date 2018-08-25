@@ -33,6 +33,8 @@ public class GenericState extends AbstractAppState
     protected Camera cam;
     
     protected Guis guis;
+    
+    protected Settings settings;
 	
     public GenericState(){}
 	
@@ -55,6 +57,8 @@ public class GenericState extends AbstractAppState
 	this.cam = this.app.getCamera();
         
         this.guis = this.app.getGUIs();
+        
+        this.settings = this.app.getSettings();
     }
 	
     @Override

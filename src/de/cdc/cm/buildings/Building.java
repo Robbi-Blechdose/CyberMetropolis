@@ -44,4 +44,9 @@ public class Building
     {
         buildingNode.detachChild(model);
     }
+    
+    public Vector3f getPosition()
+    {
+        return model.getLocalTranslation();
+    }
 }
