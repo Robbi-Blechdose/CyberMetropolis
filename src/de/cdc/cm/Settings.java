@@ -16,6 +16,8 @@ public class Settings
     
     public Settings()
     {
+//        width = 1280;
+//        height = 720;
         width = 640;
         height = 360;
         vSync = true;
