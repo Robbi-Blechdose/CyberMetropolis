@@ -3,9 +3,7 @@ package de.cdc.cm.units;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioData;
 import com.jme3.audio.AudioNode;
-import com.jme3.effect.ParticleEmitter;
 import com.jme3.math.Vector3f;
-import com.jme3.network.serializing.Serializable;
 import com.jme3.scene.Node;
 import com.simsilica.lemur.Label;
 
@@ -111,7 +109,7 @@ public class Unit
     {
         Vector3f a = targetPos.clone().setY(0);
         Vector3f b = model.getLocalTranslation().clone().setY(0);
-        if(a.distance(b) <= 2.9f)
+        if(a.distance(b) <= 3.1f)
         {
             this.oldPos = model.getLocalTranslation().clone();
             this.targetPos = targetPos;

@@ -5,7 +5,6 @@ import com.jme3.math.Vector3f;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.scene.Node;
-import com.jme3.util.SkyFactory;
 
 /**
  *
@@ -61,8 +60,8 @@ public class WorldGenerator
                 positions[i][o] = hex.getLocalTranslation();
             }
         }
-                generateMountains();
-                generateEdge();
+        generateMountains();
+        generateEdge();
     }
     
     public Vector3f[][] getWorldPositions()
@@ -142,7 +141,6 @@ public class WorldGenerator
     
     private void generateEdge()
     {
-        
         for(int o = 1; o < 4; o++)
         {
             for(int i = 0; i < 100; i++)

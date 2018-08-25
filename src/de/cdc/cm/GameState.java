@@ -26,6 +26,8 @@ import com.jme3.network.MessageListener;
 import com.jme3.network.Network;
 import com.jme3.network.serializing.Serializer;
 import com.jme3.scene.Node;
+import de.cdc.cm.buildings.Building;
+import de.cdc.cm.buildings.Building.BuildingType;
 import de.cdc.cm.networking.GameServer;
 import de.cdc.cm.networking.UnitCreatedMessage;
 import de.cdc.cm.networking.UnitDestroyedMessage;
@@ -34,6 +36,7 @@ import de.cdc.cm.units.Unit;
 import de.cdc.cm.units.Unit.UnitType;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import jme3tools.optimize.GeometryBatchFactory;
@@ -52,9 +55,10 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     private FlyCamAppState flycam;
     
     private Node world;
-    private RigidBodyControl worldPhysics;
     private Node unitNode;
     private Node enemyUnitNode;
+    private Node buildingNode;
+    private Node enemyBuildingNode;
     
     private Vector3f[][] worldPositions;
     
@@ -64,6 +68,8 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     private List<Unit> units;
     private List<Unit> enemyUnits;
     private int unitId = 0;
+    private List<Building> buildings;
+    private List<Building> enemyBuildings;
     
     private Unit selectedUnit;
     private Vector3f targetPosition;
@@ -95,6 +101,12 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         enemyUnitNode = new Node();
         rootNode.attachChild(enemyUnitNode);
         
+        buildingNode = new Node();
+        rootNode.attachChild(buildingNode);
+        
+        enemyBuildingNode = new Node();
+        rootNode.attachChild(enemyBuildingNode);
+        
         //Generate world
         WorldGenerator wg = new WorldGenerator(rootNode, world, assetManager);
         GeometryBatchFactory.optimize(world);
@@ -111,6 +123,9 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         
         units = new ArrayList<Unit>();
         enemyUnits = new ArrayList<Unit>();
+        
+        buildings = new ArrayList<Building>();
+        enemyBuildings = new ArrayList<Building>();
         
         //Register actions
         inputManager.addMapping("Select", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
@@ -149,6 +164,23 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         
         deathParticles = (Node) assetManager.loadModel("Models/DeathParticles.j3o");
         rootNode.attachChild(deathParticles);
+        
+        if(isHosting)
+        {
+            Building hq = new Building(buildingNode, assetManager, true, BuildingType.HEADQUARTERS, new Vector3f(35.765f, 2f - 0.361f, 24.4f));
+            buildings.add(hq);
+            
+            Building ehq = new Building(buildingNode, assetManager, false, BuildingType.HEADQUARTERS, new Vector3f(220.219f, 2f - 0.086f, 222.04f));
+            enemyBuildings.add(ehq);
+        }
+        else
+        {
+            Building hq = new Building(buildingNode, assetManager, true, BuildingType.HEADQUARTERS, new Vector3f(220.219f, 2f - 0.086f, 222.04f));
+            buildings.add(hq);
+            
+            Building ehq = new Building(buildingNode, assetManager, false, BuildingType.HEADQUARTERS, new Vector3f(35.765f, 2f - 0.361f, 24.4f));
+            enemyBuildings.add(ehq);
+        }
     }
     
     @Override
@@ -209,12 +241,15 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                 
                 for(int i = 0; i < units.size(); i++)
                 {
-                    if(closest.getGeometry().getParent().getParent().getName().equals("UNIT" + units.get(i).getId()))
+                    if(closest.getGeometry().getParent().getParent() != null)
                     {
-                        selectedUnit = units.get(i);
-                        tryMoveActiveUnit();
-                        found = true;
-                        break;
+                        if(closest.getGeometry().getParent().getParent().getName().equals("UNIT" + units.get(i).getId()))
+                        {
+                            selectedUnit = units.get(i);
+    //                        tryMoveActiveUnit();
+                            found = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -274,8 +309,28 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                             }
                         }
                     }
+                    
                     targetPosition = closestTarget.add(0, 2, 0);
-                    tryMoveActiveUnit();
+                    
+                    boolean canMove = true;
+                    
+                    for(int i = 0; i < units.size(); i++)
+                    {
+                        if(units.get(i).getModel().getLocalTranslation().distance(targetPosition) < 0.1f && !units.get(i).equals(selectedUnit))
+                        {
+                            canMove = false;
+                            break;
+                        }
+                    }
+                    
+                    if(canMove)
+                    {
+                        tryMoveActiveUnit();
+                    }
+                    else
+                    {
+                        targetPosition = null;
+                    }
                 }
             }
         }
