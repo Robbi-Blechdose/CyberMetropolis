@@ -72,6 +72,9 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     
     private boolean initPhase = true;
     
+    //Particles 'n' stuff
+    private Node deathParticles;
+    
     public GameState(boolean isHosting)
     {
         super();
@@ -143,6 +146,9 @@ public class GameState extends GenericState implements ActionListener, ClientSta
             System.out.println("Could not connect.");
             e.printStackTrace();
         }
+        
+        deathParticles = (Node) assetManager.loadModel("Models/DeathParticles.j3o");
+        rootNode.attachChild(deathParticles);
     }
     
     @Override
@@ -331,15 +337,19 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                 for(int i = 0; i < ((UnitUpdateMessage) m).getUnitPositions().size(); i++)
                 {
                     final int j = i;
-                    app.enqueue(new Callable()
+                    
+                    if(j < enemyUnits.size())
                     {
-                        @Override
-                        public Object call()
+                        app.enqueue(new Callable()
                         {
-                            enemyUnits.get(j).getModel().setLocalTranslation(((UnitUpdateMessage) m).getUnitPositions().get(j));
-                            return null;
-                        }
-                    });
+                            @Override
+                            public Object call()
+                            {
+                                enemyUnits.get(j).getModel().setLocalTranslation(((UnitUpdateMessage) m).getUnitPositions().get(j));
+                                return null;
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -387,6 +397,8 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                         {
                             if(enemyUnits.get(i).getId() == ((UnitDestroyedMessage) m).getId())
                             {
+                                deathParticles.setLocalTranslation(enemyUnits.get(i).getModel().getLocalTranslation().add(0, 2, 0));
+                                ((ParticleEmitter) deathParticles.getChild("Emitter")).emitAllParticles();
                                 enemyUnits.get(i).cleanup(enemyUnitNode);
                                 enemyUnits.remove(i);
                                 break;
@@ -407,6 +419,8 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                         {
                             if(units.get(i).getId() == ((UnitDestroyedMessage) m).getId())
                             {
+                                deathParticles.setLocalTranslation(units.get(i).getModel().getLocalTranslation().add(0, 2, 0));
+                                ((ParticleEmitter) deathParticles.getChild("Emitter")).emitAllParticles();
                                 units.get(i).cleanup(unitNode);
                                 units.remove(i);
                                 break;

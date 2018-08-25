@@ -42,11 +42,11 @@ public class Guis
     {
         gameNode = new Node();
         
-        Button addUnit = new Button("Create Unit");
-        addUnit.setName("addUnit");
-        addUnit.setPreferredSize(new Vector3f(app.getSettings().getWidth() / 16, app.getSettings().getHeight() / 9, 1));
-        addUnit.setLocalTranslation(0, app.getSettings().getHeight(), 0);
-        addUnit.addClickCommands(new Command<Button>()
+        Button createSoldier = new Button("Create Soldier");
+        createSoldier.setName("createSoldier");
+        createSoldier.setPreferredSize(new Vector3f(app.getSettings().getWidth() / 16, app.getSettings().getHeight() / 9, 1));
+        createSoldier.setLocalTranslation(0, app.getSettings().getHeight(), 0);
+        createSoldier.addClickCommands(new Command<Button>()
         {
             @Override
             public void execute(Button source)
@@ -54,7 +54,21 @@ public class Guis
                 app.getStateManager().getState(GameState.class).addUnit(UnitType.SOLDIER);
             }
         });
-        gameNode.attachChild(addUnit);
+        gameNode.attachChild(createSoldier);
+        
+        Button createSniper = new Button("Create Sniper");
+        createSniper.setName("createSniper");
+        createSniper.setPreferredSize(new Vector3f(app.getSettings().getWidth() / 16, app.getSettings().getHeight() / 9, 1));
+        createSniper.setLocalTranslation(createSoldier.getPreferredSize().x, app.getSettings().getHeight(), 0);
+        createSniper.addClickCommands(new Command<Button>()
+        {
+            @Override
+            public void execute(Button source)
+            {
+                app.getStateManager().getState(GameState.class).addUnit(UnitType.SNIPER);
+            }
+        });
+        gameNode.attachChild(createSniper);
         
         menuNode = new Node();
         

@@ -30,7 +30,6 @@ public class Unit
     private Label healthLabel;
     private AudioNode pootis;
     private AudioNode attackSFX;
-    private Node deathParticles;
     
     private Vector3f oldPos;
     private Vector3f targetPos;
@@ -66,7 +65,11 @@ public class Unit
             }
             case SNIPER:
             {
-                //TODO
+                ((Node) model.getChild("Weapon")).attachChild(assetManager.loadModel("Models/Weapons/Pistol.j3o"));
+                attackSFX = new AudioNode(assetManager, "Sounds/sniper.wav", AudioData.DataType.Buffer);
+                health = 60;
+                damage = 55;
+                range = 5.8f;
                 break;
             }
         }
@@ -89,24 +92,26 @@ public class Unit
         
         attackSFX.setVolume(0.4f);
         model.attachChild(attackSFX);
-        
-        //Particles 'n' stuff
-        deathParticles = (Node) assetManager.loadModel("Models/DeathParticles.j3o");
-        unitNode.attachChild(deathParticles);
     }
     
     public void attackUnit(Unit enemy)
     {
-        if(enemy.getModel().getLocalTranslation().distance(model.getLocalTranslation()) <= range)
+        Vector3f a = enemy.getModel().getLocalTranslation().clone().setY(0);
+        Vector3f b = model.getLocalTranslation().clone().setY(0);
+        if(a.distance(b) <= range)
         {
-            enemy.damageUnit(damage);
-            attackSFX.play();
+            if(!enemy.damageUnit(damage))
+            {
+                attackSFX.play();
+            }
         }
     }
     
     public void setTargetPosition(Vector3f targetPos)
     {
-        if(model.getLocalTranslation().distance(targetPos) <= 2.9f)
+        Vector3f a = targetPos.clone().setY(0);
+        Vector3f b = model.getLocalTranslation().clone().setY(0);
+        if(a.distance(b) <= 2.9f)
         {
             this.oldPos = model.getLocalTranslation().clone();
             this.targetPos = targetPos;
@@ -129,16 +134,16 @@ public class Unit
         }
     }
     
-    public void damageUnit(int dmg)
+    public boolean damageUnit(int dmg)
     {
         health -= dmg;
         if(health <= 0)
         {
             dead = true;
             pootis.play();
-            deathParticles.setLocalTranslation(model.getLocalTranslation().add(0, 2, 0));
-            ((ParticleEmitter) deathParticles.getChild("Emitter")).emitAllParticles();
+            return true;
         }
+        return false;
     }
     
     public void dontDead()
@@ -149,7 +154,6 @@ public class Unit
     public void cleanup(Node unitNode)
     {
         unitNode.detachChild(model);
-        unitNode.detachChild(deathParticles);
     }
     
     public Node getModel()
