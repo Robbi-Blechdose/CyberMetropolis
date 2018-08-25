@@ -58,7 +58,7 @@ public class Unit
                 attackSFX = new AudioNode(assetManager, "Sounds/knife.wav", AudioData.DataType.Buffer);
                 health = 100;
                 damage = 40;
-                range = 2.9f;
+                range = 2.9f * 2;
                 break;
             }
             case SNIPER:
@@ -67,7 +67,7 @@ public class Unit
                 attackSFX = new AudioNode(assetManager, "Sounds/sniper.wav", AudioData.DataType.Buffer);
                 health = 60;
                 damage = 55;
-                range = 5.8f;
+                range = 2.9f * 5;
                 break;
             }
         }
@@ -109,7 +109,7 @@ public class Unit
     {
         Vector3f a = targetPos.clone().setY(0);
         Vector3f b = model.getLocalTranslation().clone().setY(0);
-        if(a.distance(b) <= 3.1f)
+        if(a.distance(b) <= (2.9f * 5))
         {
             this.oldPos = model.getLocalTranslation().clone();
             this.targetPos = targetPos;

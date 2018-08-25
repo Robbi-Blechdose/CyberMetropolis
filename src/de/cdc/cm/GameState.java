@@ -281,15 +281,18 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                     
                     for(int i = 0; i < enemyUnits.size(); i++)
                     {
-                        if(closest.getGeometry().getParent().getParent().getName().equals("UNIT" + i))
+                        if(closest.getGeometry().getParent().getParent() != null)
                         {
-                            if(selectedUnit != null)
+                            if(closest.getGeometry().getParent().getParent().getName().equals("UNIT" + i))
                             {
-                                selectedUnit.attackUnit(enemyUnits.get(i));
-                                selectedUnit = null;
+                                if(selectedUnit != null)
+                                {
+                                    selectedUnit.attackUnit(enemyUnits.get(i));
+                                    selectedUnit = null;
+                                }
+                                found = true;
+                                break;
                             }
-                            found = true;
-                            break;
                         }
                     }
                 }
