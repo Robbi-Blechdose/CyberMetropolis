@@ -5,6 +5,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.scene.Node;
+import com.jme3.util.SkyFactory;
 
 /**
  *
@@ -18,12 +19,13 @@ public class WorldGenerator
     
     private Vector3f[][] positions;
     
-    public WorldGenerator(Node world, AssetManager assetManager)
+    public WorldGenerator(Node rootNode, Node world, AssetManager assetManager)
     {
         this.world = world;
         this.assetManager = assetManager;
         this.positions = new Vector3f[100][100];
         generateWorld();
+        rootNode.attachChild(assetManager.loadModel("Models/Skybox.j3o"));
     }
     
     private void generateWorld()
