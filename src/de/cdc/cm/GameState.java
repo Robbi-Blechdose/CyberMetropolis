@@ -63,6 +63,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     
     private List<Unit> units;
     private List<Unit> enemyUnits;
+    private int unitId = 0;
     
     private Unit selectedUnit;
     private Vector3f targetPosition;
@@ -214,7 +215,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                 
                 for(int i = 0; i < units.size(); i++)
                 {
-                    if(closest.getGeometry().getParent().getParent().getName().equals("UNIT" + i))
+                    if(closest.getGeometry().getParent().getParent().getName().equals("UNIT" + units.get(i).getId()))
                     {
                         selectedUnit = units.get(i);
                         tryMoveActiveUnit();
@@ -306,7 +307,8 @@ public class GameState extends GenericState implements ActionListener, ClientSta
     {
         Vector3f startPos = new Vector3f(1.4f, 2, 2);
         
-        client.send(new UnitCreatedMessage(units.size(), t, startPos, isHosting));
+        client.send(new UnitCreatedMessage(unitId, t, startPos, isHosting));
+        unitId++;
     }
     
     private void tryMoveActiveUnit()
@@ -363,7 +365,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                     public Object call()
                     {
                         Unit unit = new Unit(((UnitCreatedMessage) m).getType(), enemyUnitNode, assetManager,
-                                ((UnitCreatedMessage) m).getLocation(), enemyUnits.size(), true);
+                                ((UnitCreatedMessage) m).getLocation(), ((UnitCreatedMessage) m).getId(), false);
                         enemyUnits.add(unit);
                         return null;
                     }
@@ -377,7 +379,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                     public Object call()
                     {
                         Unit unit = new Unit(((UnitCreatedMessage) m).getType(), unitNode, assetManager,
-                                ((UnitCreatedMessage) m).getLocation(), units.size(), false);
+                                ((UnitCreatedMessage) m).getLocation(), ((UnitCreatedMessage) m).getId(), true);
                         units.add(unit);
                         return null;
                     }

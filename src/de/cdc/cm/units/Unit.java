@@ -4,6 +4,7 @@ import com.jme3.asset.AssetManager;
 import com.jme3.math.Vector3f;
 import com.jme3.network.serializing.Serializable;
 import com.jme3.scene.Node;
+import com.simsilica.lemur.Label;
 
 /**
  *
@@ -21,6 +22,7 @@ public class Unit
     
     private UnitType unitType;
     private Node model;
+    private Label healthLabel;
     
     private Vector3f oldPos;
     private Vector3f targetPos;
@@ -28,6 +30,7 @@ public class Unit
     
     private int health;
     private int damage;
+    private float range;
     private boolean dead = false;
     
     public Unit(UnitType t, Node unitNode, AssetManager assetManager, Vector3f startPos, int id, boolean isPlayerA)
@@ -49,6 +52,7 @@ public class Unit
                 ((Node) model.getChild("Weapon")).attachChild(assetManager.loadModel("Models/Weapons/Sword.j3o"));
                 health = 100;
                 damage = 40;
+                range = 2.9f;
                 break;
             }
         }
@@ -57,13 +61,19 @@ public class Unit
         model.setName("UNIT" + id);
         this.id = id;
         
+        healthLabel = new Label("" + health);
+        healthLabel.setLocalTranslation(0, 2, 0);
+        model.attachChild(healthLabel);
+        
         unitNode.attachChild(model);
     }
     
     public void attackUnit(Unit enemy)
     {
-        setTargetPosition(enemy.getModel().getLocalTranslation());
-        enemy.damageUnit(damage);
+        if(enemy.getModel().getLocalTranslation().distance(model.getLocalTranslation()) <= range)
+        {
+            enemy.damageUnit(damage);
+        }
     }
     
     public void setTargetPosition(Vector3f targetPos)
