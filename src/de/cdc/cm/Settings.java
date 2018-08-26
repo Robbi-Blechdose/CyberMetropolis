@@ -16,16 +16,16 @@ public class Settings
     
     public Settings()
     {
-        width = 1280;
-        height = 720;
+//        width = 1280;
+//        height = 720;
 //        width = 640;
 //        height = 360;
 //        fullscreen = false;
         vSync = true;
         aaSamples = 2;
-//        width = 1920;
-//        height = 1080;
-//        fullscreen = true;
+        width = 1920;
+        height = 1080;
+        fullscreen = true;
     }
 
     public int getWidth()
