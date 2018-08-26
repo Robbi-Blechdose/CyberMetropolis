@@ -222,8 +222,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         {
             unit.update(tpf);
             unitPositions.add(unit.getModel().getLocalTranslation());
-            float[] angles = new float[3];
-            unit.getModel().getLocalRotation().toAngles(angles);
+            float[] angles = unit.getModel().getLocalRotation().toAngles(null);
             unitRotations.add(angles[1]);
         }
         
