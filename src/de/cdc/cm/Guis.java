@@ -70,6 +70,20 @@ public class Guis
         });
         gameNode.attachChild(createSniper);
         
+        Button createMech = new Button("Create Mech");
+        createMech.setName("createMech");
+        createMech.setPreferredSize(new Vector3f(app.getSettings().getWidth() / 16, app.getSettings().getHeight() / 9, 1));
+        createMech.setLocalTranslation(createMech.getPreferredSize().x * 2, app.getSettings().getHeight(), 0);
+        createMech.addClickCommands(new Command<Button>()
+        {
+            @Override
+            public void execute(Button source)
+            {
+                app.getStateManager().getState(GameState.class).addUnit(UnitType.MECH);
+            }
+        });
+        gameNode.attachChild(createMech);
+        
         menuNode = new Node();
         
         Panel menuBG = new Panel();

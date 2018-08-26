@@ -17,7 +17,7 @@ public class Unit
 {
     public static enum UnitType
     {
-        SOLDIER, SNIPER
+        SOLDIER, SNIPER, MECH
     };
     
     private int id;
@@ -43,13 +43,27 @@ public class Unit
     public Unit(UnitType t, Node unitNode, AssetManager assetManager, Vector3f startPos, int id, boolean isPlayerA)
     {
         this.unitType = t;
-        if(isPlayerA)
+        if(unitType == UnitType.MECH)
         {
-            model = (Node) assetManager.loadModel("Models/Units/Unit_blue.j3o");
+            if(isPlayerA)
+            {
+                model = (Node) assetManager.loadModel("Models/Units/Mech_blue.j3o");
+            }
+            else
+            {
+                model = (Node) assetManager.loadModel("Models/Units/Mech_red.j3o");
+            }
         }
         else
         {
-            model = (Node) assetManager.loadModel("Models/Units/Unit_red.j3o");
+            if(isPlayerA)
+            {
+                model = (Node) assetManager.loadModel("Models/Units/Unit_blue.j3o");
+            }
+            else
+            {
+                model = (Node) assetManager.loadModel("Models/Units/Unit_red.j3o");
+            }
         }
         
         switch(unitType)
@@ -70,6 +84,14 @@ public class Unit
                 startHealth = health = 60;
                 damage = 55;
                 range = 2.9f * 5;
+                break;
+            }
+            case MECH:
+            {
+                attackSFX = new AudioNode(assetManager, "Sounds/sniper.wav", AudioData.DataType.Buffer);
+                startHealth = health = 140;
+                damage = 50;
+                range = 2.9f;
                 break;
             }
         }
