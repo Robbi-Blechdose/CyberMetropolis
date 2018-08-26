@@ -253,7 +253,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                 
                 for(int i = 0; i < units.size(); i++)
                 {
-                    if(closest.getGeometry().getParent().getParent() != null)
+                    if(closest.getGeometry().getParent().getParent().getName() != null)
                     {
                         if(closest.getGeometry().getParent().getParent().getName().equals("UNIT" + units.get(i).getId()))
                         {
@@ -281,7 +281,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                     
                     for(int i = 0; i < enemyUnits.size(); i++)
                     {
-                        if(closest.getGeometry().getParent().getParent() != null)
+                        if(closest.getGeometry().getParent().getParent().getName() != null)
                         {
                             if(closest.getGeometry().getParent().getParent().getName().equals("UNIT" + i))
                             {

@@ -5,6 +5,7 @@ import com.jme3.audio.AudioData;
 import com.jme3.audio.AudioNode;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import com.jme3.scene.control.BillboardControl;
 import com.simsilica.lemur.Label;
 
 /**
@@ -33,6 +34,7 @@ public class Unit
     private Vector3f targetPos;
     private boolean isMoving = false;
     
+    private int startHealth;
     private int health;
     private int damage;
     private float range;
@@ -56,7 +58,7 @@ public class Unit
             {
                 ((Node) model.getChild("Weapon")).attachChild(assetManager.loadModel("Models/Weapons/Sword.j3o"));
                 attackSFX = new AudioNode(assetManager, "Sounds/knife.wav", AudioData.DataType.Buffer);
-                health = 100;
+                startHealth = health = 100;
                 damage = 40;
                 range = 2.9f * 2;
                 break;
@@ -65,7 +67,7 @@ public class Unit
             {
                 ((Node) model.getChild("Weapon")).attachChild(assetManager.loadModel("Models/Weapons/Pistol.j3o"));
                 attackSFX = new AudioNode(assetManager, "Sounds/sniper.wav", AudioData.DataType.Buffer);
-                health = 60;
+                startHealth = health = 60;
                 damage = 55;
                 range = 2.9f * 5;
                 break;
@@ -76,10 +78,14 @@ public class Unit
         model.setName("UNIT" + id);
         this.id = id;
         
-        healthLabel = new Label("" + health);
-        healthLabel.setLocalTranslation(0, 20, 0);
-        healthLabel.setLocalScale(1000, 200, 1);
+        healthLabel = new Label(health + "/" + startHealth);
+        healthLabel.setLocalTranslation(0, 2.5f, 0);
+        healthLabel.setLocalScale(0.016f, 0.009f, 1);
         model.attachChild(healthLabel);
+        
+        BillboardControl ctrl = new BillboardControl();
+        ctrl.setAlignment(BillboardControl.Alignment.Camera);
+        healthLabel.addControl(ctrl);
         
         unitNode.attachChild(model);
         
@@ -115,6 +121,9 @@ public class Unit
             this.targetPos = targetPos;
             isMoving = true;
         }
+        
+        Vector3f targetCopy = targetPos.clone().setY(oldPos.y);
+        model.getChild("Cube").lookAt(targetCopy, Vector3f.UNIT_Y);
     }
     
     public void update(float tpf)
@@ -135,6 +144,7 @@ public class Unit
     public boolean damageUnit(int dmg)
     {
         health -= dmg;
+        healthLabel.setText(health + "/" + startHealth);
         if(health <= 0)
         {
             dead = true;
