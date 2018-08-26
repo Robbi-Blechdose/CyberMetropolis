@@ -22,9 +22,9 @@ public class GameServer implements MessageListener<HostedConnection>, Connection
     private Server server;
  
     private List<Vector3f> unitAPositions;
-    private List<Quaternion> unitARotations;
+    private List<Float> unitARotations;
     private List<Vector3f> unitBPositions;
-    private List<Quaternion> unitBRotations;
+    private List<Float> unitBRotations;
     
     public GameServer()
     {
@@ -44,9 +44,9 @@ public class GameServer implements MessageListener<HostedConnection>, Connection
         }
         
         unitAPositions = new ArrayList<Vector3f>();
-        unitARotations = new ArrayList<Quaternion>();
+        unitARotations = new ArrayList<Float>();
         unitBPositions = new ArrayList<Vector3f>();
-        unitBRotations = new ArrayList<Quaternion>();
+        unitBRotations = new ArrayList<Float>();
     }
     
     public void update(float tpf)

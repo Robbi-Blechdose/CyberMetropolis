@@ -216,13 +216,15 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         }
         
         List<Vector3f> unitPositions = new ArrayList<Vector3f>();
-        List<Quaternion> unitRotations = new ArrayList<Quaternion>();
+        List<Float> unitRotations = new ArrayList<Float>();
         
         for(Unit unit : units)
         {
             unit.update(tpf);
             unitPositions.add(unit.getModel().getLocalTranslation());
-            unitRotations.add(unit.getModel().getLocalRotation());
+            float[] angles = new float[3];
+            unit.getModel().getLocalRotation().toAngles(angles);
+            unitRotations.add(angles[1]);
         }
         
         client.send(new UnitUpdateMessage(unitPositions, unitRotations, isHosting));
@@ -423,7 +425,8 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                             public Object call()
                             {
                                 enemyUnits.get(j).getModel().setLocalTranslation(((UnitUpdateMessage) m).getUnitPositions().get(j));
-                                enemyUnits.get(j).getModel().setLocalRotation(((UnitUpdateMessage) m).getUnitRotations().get(j));
+                                enemyUnits.get(j).getModel().setLocalRotation(new Quaternion().fromAngles(0, 
+                                        ((UnitUpdateMessage) m).getUnitRotations().get(j), 0));
                                 return null;
                             }
                         });

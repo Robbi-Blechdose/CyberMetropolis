@@ -15,12 +15,12 @@ import java.util.List;
 public class UnitUpdateMessage extends AbstractMessage
 {
     private List<Vector3f> unitPositions;
-    private List<Quaternion> unitRotations;
+    private List<Float> unitRotations;
     private boolean isPlayerA;
     
     public UnitUpdateMessage() {}
     
-    public UnitUpdateMessage(List<Vector3f> unitPositions, List<Quaternion> unitRotations, boolean isPlayerA)
+    public UnitUpdateMessage(List<Vector3f> unitPositions, List<Float> unitRotations, boolean isPlayerA)
     {
         this.unitPositions = unitPositions;
         this.unitRotations = unitRotations;
@@ -32,7 +32,7 @@ public class UnitUpdateMessage extends AbstractMessage
         return unitPositions;
     }
     
-    public List<Quaternion> getUnitRotations()
+    public List<Float> getUnitRotations()
     {
         return unitRotations;
     }
