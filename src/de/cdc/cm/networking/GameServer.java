@@ -42,6 +42,11 @@ public class GameServer implements MessageListener<HostedConnection>, Connection
             System.out.println("Could not start server.");
             e.printStackTrace();
         }
+        
+        unitAPositions = new ArrayList<Vector3f>();
+        unitARotations = new ArrayList<Quaternion>();
+        unitBPositions = new ArrayList<Vector3f>();
+        unitBRotations = new ArrayList<Quaternion>();
     }
     
     public void update(float tpf)
