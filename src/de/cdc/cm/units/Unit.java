@@ -91,7 +91,7 @@ public class Unit
                 attackSFX = new AudioNode(assetManager, "Sounds/nootnoot.wav", AudioData.DataType.Buffer);
                 startHealth = health = 140;
                 damage = 50;
-                range = 2.9f;
+                range = 3f;
                 break;
             }
         }
