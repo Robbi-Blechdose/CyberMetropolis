@@ -88,7 +88,7 @@ public class Unit
             }
             case MECH:
             {
-                attackSFX = new AudioNode(assetManager, "Sounds/sniper.wav", AudioData.DataType.Buffer);
+                attackSFX = new AudioNode(assetManager, "Sounds/nootnoot.wav", AudioData.DataType.Buffer);
                 startHealth = health = 140;
                 damage = 50;
                 range = 2.9f;
@@ -120,7 +120,7 @@ public class Unit
         model.attachChild(attackSFX);
     }
     
-    public void attackUnit(Unit enemy)
+    public int attackUnit(Unit enemy)
     {
         Vector3f a = enemy.getModel().getLocalTranslation().clone().setY(0);
         Vector3f b = model.getLocalTranslation().clone().setY(0);
@@ -130,22 +130,27 @@ public class Unit
             {
                 attackSFX.play();
             }
+            return damage;
         }
+        return 0;
     }
     
-    public void setTargetPosition(Vector3f targetPos)
+    public void setTargetPosition(Vector3f target)
     {
-        Vector3f a = targetPos.clone().setY(0);
-        Vector3f b = model.getLocalTranslation().clone().setY(0);
-        if(a.distance(b) <= (2.9f * 5))
+        if(target != null)
         {
-            this.oldPos = model.getLocalTranslation().clone();
-            this.targetPos = targetPos;
-            isMoving = true;
+            Vector3f a = target.clone().setY(0);
+            Vector3f b = model.getLocalTranslation().clone().setY(0);
+            if(a.distance(b) <= (2.9f * 5))
+            {
+                this.oldPos = model.getLocalTranslation().clone();
+                this.targetPos = target;
+                isMoving = true;
+            }
+
+            Vector3f targetCopy = target.clone().setY(oldPos.y);
+            model.getChild("Cube").lookAt(targetCopy, Vector3f.UNIT_Y);
         }
-        
-        Vector3f targetCopy = targetPos.clone().setY(oldPos.y);
-        model.getChild("Cube").lookAt(targetCopy, Vector3f.UNIT_Y);
     }
     
     public void update(float tpf)

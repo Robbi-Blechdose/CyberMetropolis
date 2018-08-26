@@ -28,6 +28,7 @@ import com.jme3.post.filters.BloomFilter.GlowMode;
 import com.jme3.scene.Node;
 import de.cdc.cm.buildings.Building;
 import de.cdc.cm.buildings.Building.BuildingType;
+import de.cdc.cm.networking.DamageSyncMessage;
 import de.cdc.cm.networking.GameServer;
 import de.cdc.cm.networking.UnitCreatedMessage;
 import de.cdc.cm.networking.UnitDestroyedMessage;
@@ -146,6 +147,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         Serializer.registerClass(UnitUpdateMessage.class);
         Serializer.registerClass(UnitCreatedMessage.class);
         Serializer.registerClass(UnitDestroyedMessage.class);
+        Serializer.registerClass(DamageSyncMessage.class);
         
         if(isHosting)
         {
@@ -287,8 +289,13 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                             {
                                 if(selectedUnit != null)
                                 {
-                                    selectedUnit.attackUnit(enemyUnits.get(i));
+                                    int damageDone = selectedUnit.attackUnit(enemyUnits.get(i));
                                     selectedUnit = null;
+                                    
+                                    if(damageDone != 0)
+                                    {
+                                        client.send(new DamageSyncMessage(enemyUnits.get(i).getId(), damageDone, !isHosting));
+                                    }
                                 }
                                 found = true;
                                 break;
@@ -490,6 +497,28 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                                 ((ParticleEmitter) deathParticles.getChild("Emitter")).emitAllParticles();
                                 units.get(i).cleanup(unitNode);
                                 units.remove(i);
+                                break;
+                            }
+                        }
+                        return null;
+                    }
+                });
+            }
+        }
+        else if(m instanceof DamageSyncMessage)
+        {
+            if((isHosting && ((DamageSyncMessage) m).isPlayerA()) || (!isHosting && !((DamageSyncMessage) m).isPlayerA()))
+            {
+                app.enqueue(new Callable()
+                {
+                    @Override
+                    public Object call()
+                    {
+                        for(int i = 0; i < enemyUnits.size(); i++)
+                        {
+                            if(units.get(i).getId() == ((DamageSyncMessage) m).getId())
+                            {
+                                units.get(i).damageUnit(((DamageSyncMessage) m).getDamage());
                                 break;
                             }
                         }

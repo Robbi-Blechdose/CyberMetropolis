@@ -71,6 +71,10 @@ public class GameServer implements MessageListener<HostedConnection>, Connection
         {
             server.broadcast(m);
         }
+        else if(m instanceof DamageSyncMessage)
+        {
+            server.broadcast(m);
+        }
     }
 
     @Override
