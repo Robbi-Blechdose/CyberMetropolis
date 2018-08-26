@@ -38,6 +38,7 @@ import de.cdc.cm.units.Unit;
 import de.cdc.cm.units.Unit.UnitType;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import jme3tools.optimize.GeometryBatchFactory;
@@ -222,7 +223,8 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         {
             unit.update(tpf);
             unitPositions.add(unit.getModel().getLocalTranslation());
-            float[] angles = unit.getModel().getLocalRotation().toAngles(null);
+            float[] angles = unit.getModel().getChild("Cube").getLocalRotation().toAngles(null);
+            System.out.println(Arrays.toString(angles));
             unitRotations.add(angles[1]);
         }
         
