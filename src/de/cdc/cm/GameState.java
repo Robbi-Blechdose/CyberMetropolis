@@ -426,7 +426,7 @@ public class GameState extends GenericState implements ActionListener, ClientSta
                             public Object call()
                             {
                                 enemyUnits.get(j).getModel().setLocalTranslation(((UnitUpdateMessage) m).getUnitPositions().get(j));
-                                enemyUnits.get(j).getModel().setLocalRotation(new Quaternion().fromAngles(0, 
+                                enemyUnits.get(j).getModel().getChild("Cube").setLocalRotation(new Quaternion().fromAngles(0, 
                                         ((UnitUpdateMessage) m).getUnitRotations().get(j), 0));
                                 return null;
                             }
