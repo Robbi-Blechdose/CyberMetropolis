@@ -1,5 +1,6 @@
 package de.cdc.cm.networking;
 
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.network.ConnectionListener;
 import com.jme3.network.HostedConnection;
@@ -21,7 +22,9 @@ public class GameServer implements MessageListener<HostedConnection>, Connection
     private Server server;
  
     private List<Vector3f> unitAPositions;
+    private List<Quaternion> unitARotations;
     private List<Vector3f> unitBPositions;
+    private List<Quaternion> unitBRotations;
     
     public GameServer()
     {
@@ -39,9 +42,6 @@ public class GameServer implements MessageListener<HostedConnection>, Connection
             System.out.println("Could not start server.");
             e.printStackTrace();
         }
-        
-        unitAPositions = new ArrayList<Vector3f>();
-        unitBPositions = new ArrayList<Vector3f>();
     }
     
     public void update(float tpf)
@@ -57,10 +57,12 @@ public class GameServer implements MessageListener<HostedConnection>, Connection
             if(((UnitUpdateMessage) m).isPlayerA())
             {
                 unitAPositions = ((UnitUpdateMessage) m).getUnitPositions();
+                unitARotations = ((UnitUpdateMessage) m).getUnitRotations();
             }
             else
             {
                 unitBPositions = ((UnitUpdateMessage) m).getUnitPositions();
+                unitBRotations = ((UnitUpdateMessage) m).getUnitRotations();
             }
         }
         else if(m instanceof UnitCreatedMessage)
@@ -91,9 +93,9 @@ public class GameServer implements MessageListener<HostedConnection>, Connection
     
     private void sendUnitUpdateMessage()
     {
-        UnitUpdateMessage messageA = new UnitUpdateMessage(unitAPositions, true);
+        UnitUpdateMessage messageA = new UnitUpdateMessage(unitAPositions, unitARotations, true);
         server.broadcast(messageA);
-        UnitUpdateMessage messageB = new UnitUpdateMessage(unitBPositions, false);
+        UnitUpdateMessage messageB = new UnitUpdateMessage(unitBPositions, unitBRotations, false);
         server.broadcast(messageB);
     }
 }

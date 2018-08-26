@@ -14,6 +14,7 @@ import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
 import com.jme3.network.Client;
@@ -215,14 +216,16 @@ public class GameState extends GenericState implements ActionListener, ClientSta
         }
         
         List<Vector3f> unitPositions = new ArrayList<Vector3f>();
+        List<Quaternion> unitRotations = new ArrayList<Quaternion>();
         
         for(Unit unit : units)
         {
             unit.update(tpf);
             unitPositions.add(unit.getModel().getLocalTranslation());
+            unitRotations.add(unit.getModel().getLocalRotation());
         }
         
-        client.send(new UnitUpdateMessage(unitPositions, isHosting));
+        client.send(new UnitUpdateMessage(unitPositions, unitRotations, isHosting));
         
         for(Unit unit : enemyUnits)
         {
