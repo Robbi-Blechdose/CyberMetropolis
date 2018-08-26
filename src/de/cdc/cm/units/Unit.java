@@ -146,10 +146,10 @@ public class Unit
                 this.oldPos = model.getLocalTranslation().clone();
                 this.targetPos = target;
                 isMoving = true;
+                
+                Vector3f targetCopy = target.clone().setY(oldPos.y);
+                model.getChild("Cube").lookAt(targetCopy, Vector3f.UNIT_Y);
             }
-
-            Vector3f targetCopy = target.clone().setY(oldPos.y);
-            model.getChild("Cube").lookAt(targetCopy, Vector3f.UNIT_Y);
         }
     }
     
